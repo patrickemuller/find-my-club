@@ -53,9 +53,13 @@ group :development, :test do
   gem "rubocop-rails-omakase", require: false
 end
 
+# Authentication for Rails applications [https://github.com/heartcombo/devise]
+gem "devise"
+
 group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "web-console"
+  gem "letter_opener"
 end
 
 group :test do
