@@ -55,6 +55,7 @@ group :development, :test do
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
   gem "factory_bot_rails"
+  gem "ffaker"
 end
 
 # Authentication for Rails applications [https://github.com/heartcombo/devise]

@@ -154,6 +154,7 @@ GEM
     factory_bot_rails (6.5.0)
       factory_bot (~> 6.5)
       railties (>= 6.1.0)
+    ffaker (2.25.0)
     friendly_id (5.5.1)
       activerecord (>= 4.0.0)
     fugit (1.11.2)
@@ -429,6 +430,7 @@ DEPENDENCIES
   debug
   devise
   factory_bot_rails
+  ffaker
   friendly_id
   importmap-rails
   jbuilder

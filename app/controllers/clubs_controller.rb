@@ -14,7 +14,7 @@ class ClubsController < ApplicationController
 
   def show
     # Do not raise an error here
-    @club = Club.friendly.find_by(id: params[:id])
+    @club = Club.friendly.find(params[:id])
 
     # Private clubs should not be accessible using URL guessing
     if @club.blank? || !@club.active? || !@club.public?

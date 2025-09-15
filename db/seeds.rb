@@ -1,3 +1,5 @@
+require 'ffaker'
+
 # Seed users and clubs with deterministic, idempotent fake data inspired by ClubsController
 # Run with: bin/rails db:seed
 
@@ -29,8 +31,21 @@ name_suffixes    = %w[Club Team Crew Squad League Collective Association Group N
   category = categories.sample
   level    = levels.sample
 
-  description = "A welcoming #{category.downcase} club for #{level.downcase} athletes. We meet weekly for training and events around the city."
-  rules       = "Be respectful, arrive on time, and support your teammates. Safety first on all outings."
+  # Generate HTML description using FFaker
+  description = <<~HTML
+    <p>
+      Welcome to the <strong>#{category}</strong> club for <em>#{level.downcase}</em> athletes.
+    </p>
+    <p>#{FFaker::Lorem.paragraph}</p>
+    <p>#{FFaker::Lorem.paragraph}</p>
+    <p>#{FFaker::Lorem.paragraph}</p>
+    <p>#{FFaker::Lorem.paragraph}</p>
+    <p>#{FFaker::Lorem.paragraph}</p>
+  HTML
+
+  # Generate HTML rules list using FFaker
+  rule_items = Array.new(rand(5..8)) { FFaker::Lorem.sentence(rand(8..16)) }
+  rules = "<ul>\n" + rule_items.map { |s| "  <li>#{s}</li>" }.join("\n") + "\n</ul>\n"
 
   owner = users[i % users.length]
 
