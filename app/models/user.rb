@@ -6,4 +6,6 @@ class User < ApplicationRecord
          :confirmable, :trackable
 
   validates :first_name, :last_name, presence: true
+
+  has_many :clubs, inverse_of: :owner, dependent: :destroy
 end

@@ -1,0 +1,21 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  active: false
+  owner: one
+  name: MyString
+  description: MyText
+  category: MyString
+  level: MyString
+  rules: MyText
+  public: false
+
+two:
+  active: false
+  owner: two
+  name: MyString
+  description: MyText
+  category: MyString
+  level: MyString
+  rules: MyText
+  public: false
