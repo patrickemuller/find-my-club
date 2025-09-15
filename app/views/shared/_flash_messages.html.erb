@@ -11,7 +11,7 @@
 
   <% flash.each do |type, message| %>
     <% next if message.blank? %>
-    <div class="relative flex items-start gap-3 rounded-md border p-3 shadow-sm <%= color_classes[type.to_s] || 'bg-gray-50 border-gray-200 text-gray-800' %>" role="alert">
+    <div class="relative flex items-start gap-3 rounded-md border p-3 shadow-sm <%= color_classes[type.to_s] || 'bg-gray-50 border-gray-200 text-gray-800' %> dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100" role="alert">
       <div class="select-none text-xl leading-none"><%= icon_for[type.to_s] || "🔔" %></div>
       <div class="text-sm">
         <%= message %>
