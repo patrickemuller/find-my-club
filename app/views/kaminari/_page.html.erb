@@ -1,0 +1,16 @@
+<%# Link showing page number
+  - available local variables
+    page:          a page object for "this" page
+    url:           url to this page
+    current_page:  a page object for the currently displayed page
+    total_pages:   total number of pages
+    per_page:      number of items to fetch per page
+    remote:        data-remote
+-%>
+<li>
+  <% if page.current? %>
+    <span aria-current="page" class="px-3 py-1.5 rounded-md border bg-orange-600 border-orange-600 text-white"><%= page %></span>
+  <% else %>
+    <%= link_to page, url, remote: remote, rel: page.rel, data: { turbo: false }, class: "px-3 py-1.5 rounded-md border border-gray-300 text-gray-800 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-100 hover:dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-1" %>
+  <% end %>
+</li>
