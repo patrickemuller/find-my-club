@@ -1,1 +1,20 @@
 @import "tailwindcss";
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/*@layer utilities {*/
+/*  !* Dark-mode equivalents for common light classes in views *!*/
+/*  [data-theme="dark"] .bg-white { background-color: theme(colors.gray.900) !important; }*/
+/*  [data-theme="dark"] .bg-gray-50 { background-color: theme(colors.gray.800) !important; }*/
+/*  [data-theme="dark"] .text-gray-900 { color: theme(colors.gray.100) !important; }*/
+/*  [data-theme="dark"] .text-gray-800 { color: theme(colors.gray.200) !important; }*/
+/*  [data-theme="dark"] .text-gray-700 { color: theme(colors.gray.300) !important; }*/
+/*  [data-theme="dark"] .text-gray-600 { color: theme(colors.gray.400) !important; }*/
+/*  [data-theme="dark"] .text-gray-500 { color: theme(colors.gray.400) !important; }*/
+
+/*  [data-theme="dark"] .border-gray-100 { border-color: theme(colors.gray.800) !important; }*/
+/*  [data-theme="dark"] .border-gray-200 { border-color: theme(colors.gray.700) !important; }*/
+/*  [data-theme="dark"] .border-gray-300 { border-color: theme(colors.gray.600) !important; }*/
+
+/*  !* Hover states used in links/buttons *!*/
+/*  [data-theme="dark"] .hover\:bg-gray-50:hover { background-color: theme(colors.gray.800) !important; }*/
+/*}*/
