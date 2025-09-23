@@ -19,10 +19,11 @@
 
     <div>
       <div class="flex items-center gap-2">
-        <%= form.label :public, class: "block text-sm font-medium text-gray-700 dark:text-gray-300" %>
-        <span class="text-gray-400" title="Public groups can appear on searches, and any user can send a request to join the club" aria-label="Public groups can appear on searches, and any user can send a request to join the club">ⓘ</span>
+        <%= form.label :public, "Public?", class: "block text-sm font-medium text-gray-700 dark:text-gray-300" %>
+        <%= render partial: "shared/tooltip", locals: { text: "Public groups can appear on searches, and any user can send a request to join the club" } %>
       </div>
-      <div class="mt-2">
+
+      <div class="flex items-center mt-2">
         <%= form.check_box :public, class: "h-4 w-4 rounded border-gray-300 text-orange-600 focus:ring-orange-500 dark:bg-gray-900 dark:border-gray-700" %>
         <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Make this club public</span>
       </div>
