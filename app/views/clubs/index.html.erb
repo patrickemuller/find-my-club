@@ -20,15 +20,15 @@
 
           <div>
             <label for="category" class="sr-only">Category</label>
-            <%= select_tag :category, options_for_select(["", "Running", "Cycling", "Swimming", "Football", "Basketball", "Tennis", "Volleyball", "Hiking", "Climbing", "Rowing"], params[:category]),
-                           include_blank: false,
+            <%= select_tag :category, options_from_collection_for_select(Club::CATEGORIES_FOR_SELECT, :first, :last, params[:category]),
+                           include_blank: true,
                            class: "rounded-md border border-gray-300 bg-white py-2 px-2 text-sm text-gray-900 shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100" %>
           </div>
 
           <div>
             <label for="level" class="sr-only">Level</label>
-            <%= select_tag :level, options_for_select(["", "Beginner", "Intermediate", "Advanced", "Expert"], params[:level]),
-                           include_blank: false,
+            <%= select_tag :level, options_from_collection_for_select(Club::LEVELS_FOR_SELECT, :first, :last, params[:level]),
+                           include_blank: true,
                            class: "rounded-md border border-gray-300 bg-white py-2 px-2 text-sm text-gray-900 shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100" %>
           </div>
 
@@ -48,7 +48,7 @@
 
   <div id="clubs" class="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 mb-8">
     <% if @clubs.present? %>
-      <div class="col-span-full text-center mt-4">
+      <div class="col-span-full text-center md:mt-4">
         <%= paginate @clubs %>
       </div>
 
@@ -70,7 +70,7 @@
         <% end %>
       <% end %>
 
-      <div class="col-span-full text-center mt-4">
+      <div class="col-span-full text-center md:mt-4">
         <%= paginate @clubs %>
       </div>
     <% else %>

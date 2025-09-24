@@ -1,21 +1,23 @@
-<div class="my-4 space-y-3" aria-live="polite" aria-atomic="true">
-  <% color_classes = {
-    "notice" => "bg-green-50 border-green-200 text-green-800",
-    "alert" => "bg-red-50 border-red-200 text-red-800",
-  } %>
+<% if flash.present? %>
+  <div class="my-4 space-y-3" aria-live="polite" aria-atomic="true">
+    <% color_classes = {
+      "notice" => "bg-green-50 border-green-200 text-green-800",
+      "alert" => "bg-red-50 border-red-200 text-red-800",
+    } %>
 
-  <% icon_for = {
-    "notice" => "✅",
-    "alert" => "⚠️"
-  } %>
+    <% icon_for = {
+      "notice" => "✅",
+      "alert" => "⚠️"
+    } %>
 
-  <% flash.each do |type, message| %>
-    <% next if message.blank? %>
-    <div class="relative flex items-start gap-3 rounded-md border p-3 shadow-sm <%= color_classes[type.to_s] || 'bg-gray-50 border-gray-200 text-gray-800' %> dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100" role="alert">
-      <div class="select-none text-xl leading-none"><%= icon_for[type.to_s] || "🔔" %></div>
-      <div class="text-sm">
-        <%= message %>
+    <% flash.each do |type, message| %>
+      <% next if message.blank? %>
+      <div class="relative flex items-start gap-3 rounded-md border p-3 shadow-sm <%= color_classes[type.to_s] || 'bg-gray-50 border-gray-200 text-gray-800' %> dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100" role="alert">
+        <div class="select-none text-xl leading-none"><%= icon_for[type.to_s] || "🔔" %></div>
+        <div class="text-sm">
+          <%= message %>
+        </div>
       </div>
-    </div>
-  <% end %>
-</div>
+    <% end %>
+  </div>
+<% end %>

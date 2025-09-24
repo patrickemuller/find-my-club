@@ -5,7 +5,7 @@ require 'ffaker'
 
 puts "Seeding users..."
 
-FactoryBot.create(:user, admin: true, email: 'admin@example.com', password: 'password')
+FactoryBot.create(:user, admin: true, first_name: 'Developer', last_name: 'Localhost', email: 'developer@example.com', password: 'password')
 
 users = FactoryBot.create_list(:user, 10)
 

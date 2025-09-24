@@ -8,25 +8,24 @@
       <div class="absolute inset-0 bg-white/70 dark:bg-gray-900/70"></div>
     </div>
 
-    <div class="relative mx-auto px-6 py-10 sm:py-14 lg:px-8">
-      <div class="grid grid-cols-1 items-center gap-6 md:grid-cols-2">
+    <div class="relative grid grid-cols-4 mx-auto px-6 py-10 sm:py-14 lg:px-8">
+      <div class="items-center col-span-4 mb-4 sm:col-span-3 sm:mb-0">
         <!-- Left: Name + badges -->
-        <div class="text-left">
           <h1 class="text-4xl font-extrabold tracking-tight sm:text-5xl"><%= @club.name %></h1>
           <div class="mt-3 flex flex-wrap items-center gap-2 text-xs">
             <span class="inline-flex items-center rounded-full border border-gray-300 bg-white/80 px-2 py-0.5 text-gray-800 shadow-sm dark:border-gray-600 dark:bg-gray-800/60 dark:text-gray-100"><%= @club.formatted_category %></span>
             <span class="inline-flex items-center rounded-full border border-gray-300 bg-white/80 px-2 py-0.5 text-gray-800 shadow-sm dark:border-gray-600 dark:bg-gray-800/60 dark:text-gray-100"><%= @club.formatted_level %></span>
             <span class="inline-flex items-center rounded-full border border-gray-300 bg-white/80 px-2 py-0.5 text-gray-800 shadow-sm dark:border-gray-600 dark:bg-gray-800/60 dark:text-gray-100"><%= rand(1..999) %> members</span>
           </div>
-        </div>
         <!-- Right: Join button -->
-        <div class="mt-4 flex items-center justify-center md:mt-0 md:justify-end">
-          <% if current_user && current_user == @club.owner %>
-            <%= link_to "Edit", edit_club_path(@club), class: "inline-flex items-center rounded-md bg-indigo-600 px-6 py-2.5 text-lg font-semibold text-white shadow hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2" %>
-          <% else %>
-            <%= link_to "Join", "#", class: "inline-flex items-center rounded-md bg-orange-600 px-6 py-2.5 text-lg font-semibold text-white shadow hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2" %>
-          <% end %>
-        </div>
+      </div>
+
+      <div class="items-center flex col-span-4 sm:col-span-1 md:justify-end text-center">
+        <% if current_user && current_user == @club.owner %>
+          <%= link_to "Update my Club", edit_club_path(@club), class: "inline-flex items-center rounded-md bg-amber-600 px-6 py-2 text-lg font-semibold text-white shadow hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2" %>
+        <% else %>
+          <%= link_to "Join", "#", class: "inline-flex items-center rounded-md bg-orange-600 px-6 py-2.5 text-lg font-semibold text-white shadow hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2" %>
+        <% end %>
       </div>
     </div>
   </section>
