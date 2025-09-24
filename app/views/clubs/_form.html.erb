@@ -1,0 +1,71 @@
+<%= form_with(model: club, class: "contents") do |form| %>
+  <% if club.errors.any? %>
+    <div id="error_explanation" class="bg-red-50 text-red-700 px-3 py-2 font-medium rounded-md my-3 border border-red-200 dark:bg-red-900/20 dark:text-red-300 dark:border-red-700">
+      <h2><%= pluralize(club.errors.count, "error") %> prohibited this club from being saved:</h2>
+      <ul class="list-disc ml-6">
+        <% club.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="grid gap-6">
+    <div>
+      <%= form.label :name, class: "block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300" %>
+      <%= form.text_field :name, required: true, class: "block w-full rounded-md p-2 border border-gray-300 bg-white shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-400" %>
+    </div>
+
+    <div>
+      <div class="flex items-center gap-2">
+        <%= form.label :public, "Public?", class: "block text-sm font-medium text-gray-700 dark:text-gray-300" %>
+        <%= render partial: "shared/tooltip", locals: { text: "Public groups can appear on searches, and any user can send a request to join the club" } %>
+      </div>
+
+      <div class="flex items-center mt-2">
+        <%= form.check_box :public, class: "h-4 w-4 rounded border-gray-300 text-orange-600 focus:ring-orange-500 dark:bg-gray-900 dark:border-gray-700" %>
+        <label for="club_public" class="ml-2 text-sm text-gray-700 dark:text-gray-300">Make this club public</label>
+      </div>
+    </div>
+
+    <div>
+      <div class="flex items-center gap-2">
+        <%= form.label :category, "Category (select all applicable)", class: "block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300" %>
+      </div>
+
+      <% Club::CATEGORIES_FOR_SELECT.each do |category| %>
+        <div class="flex items-center mt-2">
+          <%= form.check_box :category, { checked: club&.category&.include?(category.first), multiple: true, class: "h-4 w-4 rounded border-gray-300 text-orange-600 focus:ring-orange-500 dark:bg-gray-900 dark:border-gray-700" }, category.first, nil %>
+          <label for="club_category_<%= category.first %>" class="ml-2 text-sm text-gray-700 dark:text-gray-300"><%= category.last %></label>
+        </div>
+      <% end %>
+    </div>
+
+    <div>
+      <div class="flex items-center gap-2">
+        <%= form.label :level, "Level (select all applicable)", class: "block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300" %>
+      </div>
+
+      <% Club::LEVELS_FOR_SELECT.each do |level| %>
+        <div class="flex items-center mt-2">
+          <%= form.check_box :level, { checked: club&.level&.include?(level.first), multiple: true, class: "h-4 w-4 rounded border-gray-300 text-orange-600 focus:ring-orange-500 dark:bg-gray-900 dark:border-gray-700" }, level.first, nil %>
+          <label for="club_level_<%= level.first %>" class="ml-2 text-sm text-gray-700 dark:text-gray-300"><%= level.last %></label>
+        </div>
+      <% end %>
+    </div>
+
+    <div>
+      <%= form.label :description, class: "block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300" %>
+      <%= form.text_area :description, rows: 5, class: "block w-full rounded-md p-2 border border-gray-300 bg-white shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-400" %>
+    </div>
+
+    <div>
+      <%= form.label :rules, class: "block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300" %>
+      <%= form.text_area :rules, rows: 5, class: "block w-full rounded-md p-2 border border-gray-300 bg-white shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-400" %>
+    </div>
+
+    <div>
+      <%= form.submit (club.persisted? ? "Update Club" : "Create Club"), class: "inline-flex items-center rounded-md bg-orange-600 px-4 py-2 text-sm font-medium text-white shadow hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2" %>
+    </div>
+  </div>
+<% end %>

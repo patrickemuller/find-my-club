@@ -12,4 +12,13 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   root "pages#home"
+
+  resources :clubs do
+    member do
+      patch :enable
+      patch :disable
+    end
+  end
+
+  get "my-clubs", to: "clubs#my_clubs"
 end
