@@ -27,6 +27,24 @@
 class Club < ApplicationRecord
   extend FriendlyId
 
+  LEVELS_FOR_SELECT = {
+    "beginner" => "Beginner",
+    "intermediate" => "Intermediate",
+    "advanced" => "Advanced",
+    "expert" => "Expert"
+  }
+
+  CATEGORIES_FOR_SELECT = {
+    "team_ball_sports" => "Team Ball Sports",
+    "racket_sports" => "Racket Sports",
+    "combat_sports" => "Combat Sports",
+    "aquatic_sports" => "Aquatic Sports",
+    "athletics" => "Athletics",
+    "winter_sports" => "Winter Sports",
+    "cycling_sports" => "Cycling Sports",
+    "other" => "Other"
+  }
+
   friendly_id :name, use: :slugged
 
   belongs_to :owner, class_name: "User"
@@ -41,7 +59,25 @@ class Club < ApplicationRecord
     search.present? ? where("LOWER(name) LIKE :search", search: "%#{search.to_s.downcase}%") : all
   end
 
-  scope :with_category, ->(category) { category.present? ? where(category: category) : all }
+  scope :with_category, ->(categories) { categories.present? ? where("category IN (:categories)", categories: categories) : all }
 
   scope :with_level, ->(level) { level.present? ? where(level: level) : all }
+
+  def is_owner?(user)
+    owner == user
+  end
+
+  def disabled?
+    !active
+  end
+
+  def formatted_category
+    categories = category.split(", ")
+    categories.map { |c| CATEGORIES_FOR_SELECT[c] }.join(", ")
+  end
+
+  def formatted_level
+    levels = level.split(", ")
+    levels.map { |c| LEVELS_FOR_SELECT[c] }.join(", ")
+  end
 end

@@ -11,8 +11,8 @@ users = FactoryBot.create_list(:user, 10)
 
 puts "Seeding clubs..."
 
-categories = %w[Running Cycling Swimming Football Basketball Tennis Volleyball Hiking Climbing Rowing]
-levels     = [ "Beginner", "Intermediate", "Advanced", "Expert" ]
+categories = Club::CATEGORIES_FOR_SELECT.keys
+levels     = Club::LEVELS_FOR_SELECT.keys
 
 # Deterministic seed so the same clubs are generated each run
 seed = 123

@@ -38,5 +38,5 @@ class User < ApplicationRecord
 
   validates :first_name, :last_name, presence: true
 
-  has_many :clubs, inverse_of: :owner, dependent: :destroy
+  has_many :clubs, class_name: "Club", foreign_key: :owner_id, dependent: :destroy
 end
