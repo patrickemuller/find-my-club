@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/rails/rails.git
-  revision: 95bee6a4c8132b4caf53e073f7b01ce5cdeed4a6
+  revision: 8ca83a8e91d1307b1b113d9500e665f3c3c36e94
   branch: 8-0-stable
   specs:
     actioncable (8.0.3)
@@ -160,7 +160,7 @@ GEM
     fugit (1.11.2)
       et-orbi (~> 1, >= 1.2.11)
       raabro (~> 1.4)
-    globalid (1.2.1)
+    globalid (1.3.0)
       activesupport (>= 6.1)
     i18n (1.14.7)
       concurrent-ruby (~> 1.0)
@@ -267,7 +267,7 @@ GEM
       prettyprint
     prettyprint (0.2.0)
     prism (1.5.1)
-    propshaft (1.3.0)
+    propshaft (1.3.1)
       actionpack (>= 7.0.0)
       activesupport (>= 7.0.0)
       rack

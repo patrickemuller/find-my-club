@@ -66,7 +66,7 @@ class ClubsController < ApplicationController
     @club.destroy!
 
     respond_to do |format|
-      format.html { redirect_to clubs_path, notice: "Club was successfully destroyed.", status: :see_other }
+      format.html { redirect_to my_clubs_path, notice: "Club was successfully destroyed.", status: :see_other }
       format.json { head :no_content }
     end
   end
