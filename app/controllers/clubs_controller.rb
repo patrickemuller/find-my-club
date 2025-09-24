@@ -19,7 +19,7 @@ class ClubsController < ApplicationController
 
     # Private clubs should not be accessible using URL guessing
     # If you are the owner, you can access it
-    if @club.blank? || (!current_user && !@club.is_owner?(current_user)) || (@club.disabled? || !@club.public?)
+    if @club.blank? || (@club.disabled? || !@club.public?) || (current_user && !@club.is_owner?(current_user))
       render file: "#{Rails.root}/public/404.html", layout: false, status: :not_found
     end
   end
