@@ -1,0 +1,16 @@
+<h1>Congratulations!</h1>
+
+<p>Hi <%= @user.first_name %>,</p>
+
+<p>Great news! You've been approved to join <strong><%= @club.name %></strong>.</p>
+
+<p>You now have full access to the club and can start participating in all club activities.</p>
+
+<p>
+  <%= link_to "View Club", club_url(@club) %>
+</p>
+
+<p>
+  Thanks,<br>
+  Find My Club Team
+</p>

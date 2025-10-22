@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_15_010946) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_21_232145) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -39,6 +39,20 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_15_010946) do
     t.index ["slug", "sluggable_type", "scope"], name: "index_friendly_id_slugs_on_slug_and_sluggable_type_and_scope", unique: true
     t.index ["slug", "sluggable_type"], name: "index_friendly_id_slugs_on_slug_and_sluggable_type"
     t.index ["sluggable_type", "sluggable_id"], name: "index_friendly_id_slugs_on_sluggable_type_and_sluggable_id"
+  end
+
+  create_table "memberships", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "club_id", null: false
+    t.string "status", default: "active", null: false
+    t.string "role", default: "member", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["club_id"], name: "index_memberships_on_club_id"
+    t.index ["role"], name: "index_memberships_on_role"
+    t.index ["status"], name: "index_memberships_on_status"
+    t.index ["user_id", "club_id"], name: "index_memberships_on_user_id_and_club_id", unique: true
+    t.index ["user_id"], name: "index_memberships_on_user_id"
   end
 
   create_table "solid_queue_blocked_executions", force: :cascade do |t|
@@ -188,6 +202,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_15_010946) do
   end
 
   add_foreign_key "clubs", "users", column: "owner_id"
+  add_foreign_key "memberships", "clubs"
+  add_foreign_key "memberships", "users"
   add_foreign_key "solid_queue_blocked_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_claimed_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_failed_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade

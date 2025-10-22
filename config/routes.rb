@@ -14,9 +14,23 @@ Rails.application.routes.draw do
   root "pages#home"
 
   resources :clubs do
+    # Membership actions (join/leave)
+    resource :membership, only: [ :create, :destroy ]
+
+    # Member management (owner only)
+    resources :memberships, only: [] do
+      member do
+        patch :approve
+        patch :enable
+        patch :disable
+      end
+    end
+
+    # Club management (owner only)
     member do
-      patch :enable
+      patch :enable  # Enable/disable entire club
       patch :disable
+      get :members   # Member list view
     end
   end
 
