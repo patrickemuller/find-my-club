@@ -2,18 +2,16 @@
 #
 # Table name: clubs
 #
-#  id          :bigint           not null, primary key
-#  active      :boolean          default(TRUE)
-#  category    :string           not null
-#  description :text             not null
-#  level       :string           not null
-#  name        :string           not null
-#  public      :boolean          default(FALSE)
-#  rules       :text             not null
-#  slug        :string
-#  created_at  :datetime         not null
-#  updated_at  :datetime         not null
-#  owner_id    :bigint           not null
+#  id         :bigint           not null, primary key
+#  active     :boolean          default(TRUE)
+#  category   :string           not null
+#  level      :string           not null
+#  name       :string           not null
+#  public     :boolean          default(FALSE)
+#  slug       :string
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#  owner_id   :bigint           not null
 #
 # Indexes
 #
@@ -49,11 +47,16 @@ class Club < ApplicationRecord
 
   belongs_to :owner, class_name: "User"
 
+  # Rich text content
+  has_rich_text :description
+  has_rich_text :rules
+
   # Memberships
   has_many :memberships, dependent: :destroy
   has_many :members, through: :memberships, source: :user
 
-  validates :name, :description, :rules, :category, :level, presence: true
+  validates :name, :category, :level, presence: true
+  validates :description, :rules, presence: true
   validates :public, inclusion: { in: [ true, false ] }
 
   # Scopes
@@ -66,6 +69,10 @@ class Club < ApplicationRecord
   scope :with_category, ->(categories) { categories.present? ? where("category IN (:categories)", categories: categories) : all }
 
   scope :with_level, ->(level) { level.present? ? where(level: level) : all }
+
+  def should_generate_new_friendly_id?
+    name_changed?
+  end
 
   def private?
     !public?

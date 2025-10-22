@@ -10,13 +10,13 @@
     </div>
   <% end %>
 
-  <div class="grid gap-6">
-    <div>
+  <div class="w-full grid grid-cols-2">
+    <div class="col-span-2 mt-4">
       <%= form.label :name, class: "block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300" %>
-      <%= form.text_field :name, required: true, class: "block w-full rounded-md p-2 border border-gray-300 bg-white shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-400" %>
+      <%= form.text_field :name, required: true, placeholder: "The name of my incredible club from Vancouver", class: "block w-full rounded-md p-2 border border-gray-300 bg-white shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-400" %>
     </div>
 
-    <div>
+    <div class="col-span-2 mt-4">
       <div class="flex items-center gap-2">
         <%= form.label :public, "Public?", class: "block text-sm font-medium text-gray-700 dark:text-gray-300" %>
         <%= render partial: "shared/tooltip", locals: { text: "Public clubs can appear on searches, and any user can send a request to join the club. Private clubs will not show in searches, but users with the link to the club can still see it and ask to join" } %>
@@ -28,7 +28,7 @@
       </div>
     </div>
 
-    <div>
+    <div class="col-span-2 md:col-span-1 mt-4">
       <div class="flex items-center gap-2">
         <%= form.label :category, "Category (select all applicable)", class: "block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300" %>
       </div>
@@ -41,7 +41,7 @@
       <% end %>
     </div>
 
-    <div>
+    <div class="col-span-2 md:col-span-1 mt-4">
       <div class="flex items-center gap-2">
         <%= form.label :level, "Level (select all applicable)", class: "block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300" %>
       </div>
@@ -54,17 +54,17 @@
       <% end %>
     </div>
 
-    <div>
+    <div class="col-span-2 mt-4">
       <%= form.label :description, class: "block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300" %>
-      <%= form.text_area :description, rows: 5, class: "block w-full rounded-md p-2 border border-gray-300 bg-white shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-400" %>
+      <%= form.rich_text_area :description, class: "block w-full rounded-md border border-gray-300 bg-white shadow-sm focus:border-orange-500 focus:ring-orange-500" %>
     </div>
 
-    <div>
+    <div class="col-span-2 mt-4">
       <%= form.label :rules, class: "block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300" %>
-      <%= form.text_area :rules, rows: 5, class: "block w-full rounded-md p-2 border border-gray-300 bg-white shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-400" %>
+      <%= form.rich_text_area :rules, class: "block w-full rounded-md border border-gray-300 bg-white shadow-sm focus:border-orange-500 focus:ring-orange-500" %>
     </div>
 
-    <div class="flex justify-between">
+    <div class="col-span-2 flex text-center justify-between mt-4">
       <%= form.submit (club.persisted? ? "Update Club" : "Create Club"), class: "items-center rounded-md bg-orange-600 px-4 py-2 text-sm font-medium text-white shadow hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2" %>
       <%= link_to "Back to my Clubs", my_clubs_path, class: "items-center rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-900 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-100 hover:dark:bg-gray-700" %>
     </div>

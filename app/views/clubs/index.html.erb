@@ -21,14 +21,14 @@
           <div>
             <label for="category" class="sr-only">Category</label>
             <%= select_tag :category, options_from_collection_for_select(Club::CATEGORIES_FOR_SELECT, :first, :last, params[:category]),
-                           include_blank: true,
+                           include_blank: "Category",
                            class: "rounded-md border border-gray-300 bg-white py-2 px-2 text-sm text-gray-900 shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100" %>
           </div>
 
           <div>
             <label for="level" class="sr-only">Level</label>
             <%= select_tag :level, options_from_collection_for_select(Club::LEVELS_FOR_SELECT, :first, :last, params[:level]),
-                           include_blank: true,
+                           include_blank: "Level",
                            class: "rounded-md border border-gray-300 bg-white py-2 px-2 text-sm text-gray-900 shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100" %>
           </div>
 

@@ -2,18 +2,16 @@
 #
 # Table name: clubs
 #
-#  id          :bigint           not null, primary key
-#  active      :boolean          default(TRUE)
-#  category    :string           not null
-#  description :text             not null
-#  level       :string           not null
-#  name        :string           not null
-#  public      :boolean          default(FALSE)
-#  rules       :text             not null
-#  slug        :string
-#  created_at  :datetime         not null
-#  updated_at  :datetime         not null
-#  owner_id    :bigint           not null
+#  id         :bigint           not null, primary key
+#  active     :boolean          default(TRUE)
+#  category   :string           not null
+#  level      :string           not null
+#  name       :string           not null
+#  public     :boolean          default(FALSE)
+#  slug       :string
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#  owner_id   :bigint           not null
 #
 # Indexes
 #
