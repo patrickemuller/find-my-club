@@ -56,6 +56,7 @@ group :development, :test do
   gem "rubocop-rails-omakase", require: false
   gem "factory_bot_rails"
   gem "ffaker"
+  gem "rails-controller-testing"
 end
 
 # Authentication for Rails applications [https://github.com/heartcombo/devise]

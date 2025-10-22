@@ -19,7 +19,7 @@
     <div>
       <div class="flex items-center gap-2">
         <%= form.label :public, "Public?", class: "block text-sm font-medium text-gray-700 dark:text-gray-300" %>
-        <%= render partial: "shared/tooltip", locals: { text: "Public groups can appear on searches, and any user can send a request to join the club" } %>
+        <%= render partial: "shared/tooltip", locals: { text: "Public clubs can appear on searches, and any user can send a request to join the club. Private clubs will not show in searches, but users with the link to the club can still see it and ask to join" } %>
       </div>
 
       <div class="flex items-center mt-2">
@@ -64,8 +64,9 @@
       <%= form.text_area :rules, rows: 5, class: "block w-full rounded-md p-2 border border-gray-300 bg-white shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-400" %>
     </div>
 
-    <div>
-      <%= form.submit (club.persisted? ? "Update Club" : "Create Club"), class: "inline-flex items-center rounded-md bg-orange-600 px-4 py-2 text-sm font-medium text-white shadow hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2" %>
+    <div class="flex justify-between">
+      <%= form.submit (club.persisted? ? "Update Club" : "Create Club"), class: "items-center rounded-md bg-orange-600 px-4 py-2 text-sm font-medium text-white shadow hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2" %>
+      <%= link_to "Back to my Clubs", my_clubs_path, class: "items-center rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-900 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-100 hover:dark:bg-gray-700" %>
     </div>
   </div>
 <% end %>

@@ -49,6 +49,10 @@ class Club < ApplicationRecord
 
   belongs_to :owner, class_name: "User"
 
+  # Memberships
+  has_many :memberships, dependent: :destroy
+  has_many :members, through: :memberships, source: :user
+
   validates :name, :description, :rules, :category, :level, presence: true
   validates :public, inclusion: { in: [ true, false ] }
 
@@ -62,6 +66,10 @@ class Club < ApplicationRecord
   scope :with_category, ->(categories) { categories.present? ? where("category IN (:categories)", categories: categories) : all }
 
   scope :with_level, ->(level) { level.present? ? where(level: level) : all }
+
+  def private?
+    !public?
+  end
 
   def is_owner?(user)
     owner == user
@@ -79,5 +87,15 @@ class Club < ApplicationRecord
   def formatted_level
     levels = level.split(", ")
     levels.map { |c| LEVELS_FOR_SELECT[c] }.join(", ")
+  end
+
+  # TODO: consider using counter_cache for this
+  def members_count
+    memberships.active.count
+  end
+
+  def has_member?(user)
+    return false unless user
+    memberships.active.exists?(user_id: user.id)
   end
 end

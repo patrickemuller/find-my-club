@@ -38,5 +38,21 @@ class User < ApplicationRecord
 
   validates :first_name, :last_name, presence: true
 
+  # Ownership
   has_many :clubs, class_name: "Club", foreign_key: :owner_id, dependent: :destroy
+
+  # Membership
+  has_many :memberships, dependent: :destroy
+  has_many :clubs_as_member, through: :memberships, source: :club
+
+  # Helper methods
+  def member_of?(club)
+    memberships.active.exists?(club_id: club.id)
+  end
+
+  def can_join?(club)
+    return false if club.owner == self  # Owner can't join their own club
+    return false if memberships.exists?(club_id: club.id)  # Already has a membership (any status)
+    true
+  end
 end

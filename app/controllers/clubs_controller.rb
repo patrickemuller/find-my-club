@@ -5,6 +5,10 @@ class ClubsController < ApplicationController
   before_action :set_club, only: %i[show]
   before_action :parse_category_and_level, only: %i[create update]
 
+  rescue_from ActiveRecord::RecordNotFound do
+    render file: "#{Rails.root}/public/404.html", layout: false, status: :not_found
+  end
+
   def index
     @clubs = Club.publicly_visible
                  .search(params[:q])
@@ -19,7 +23,7 @@ class ClubsController < ApplicationController
 
     # Private clubs should not be accessible using URL guessing
     # If you are the owner, you can access it
-    if @club.blank? || (@club.disabled? || !@club.public?) || (current_user && !@club.is_owner?(current_user))
+    if @club.disabled?
       render file: "#{Rails.root}/public/404.html", layout: false, status: :not_found
     end
   end
@@ -66,18 +70,25 @@ class ClubsController < ApplicationController
     @club.destroy!
 
     respond_to do |format|
-      format.html { redirect_to my_clubs_path, notice: "Club was successfully destroyed.", status: :see_other }
+      format.html { redirect_to my_clubs_path, notice: "Club was successfully deleted.", status: :see_other }
       format.json { head :no_content }
     end
   end
 
   def my_clubs
     @clubs = current_user.clubs
+    @memberships = current_user.clubs_as_member.where(memberships: { status: "active" }).includes(:owner)
+  end
+
+  def members
+    @club = current_user.clubs.friendly.find(params[:id])
+    @active_members = @club.memberships.active.includes(:user)
+    @pending_members = @club.memberships.pending.includes(:user)
+    @disabled_members = @club.memberships.disabled.includes(:user)
   end
 
   def enable
     @club = current_user.clubs.friendly.find(params[:id])
-
     @club.update(active: true)
 
     respond_to do |format|
@@ -88,7 +99,6 @@ class ClubsController < ApplicationController
 
   def disable
     @club = current_user.clubs.friendly.find(params[:id])
-
     @club.update(active: false)
 
     respond_to do |format|
