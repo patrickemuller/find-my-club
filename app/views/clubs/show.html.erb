@@ -51,18 +51,18 @@
   <!-- Content sections without rounded/bordered containers -->
   <div class="mx-auto mt-8">
     <!-- Description (no title) -->
-    <section>
+    <section class="my-4">
       <h2 class="text-2xl font-bold tracking-tight">Description</h2>
       <div class="prose prose-sm max-w-none text-gray-700 dark:prose-invert dark:text-gray-300 mt-3">
-        <%= sanitize(@club.description.html_safe) %>
+        <%= @club.description %>
       </div>
     </section>
 
     <!-- Rules (with title) -->
-    <section class="mt-10 mb-8">
+    <section class="my-4">
       <h2 class="text-2xl font-bold tracking-tight">Rules</h2>
       <div class="prose prose-sm max-w-none text-gray-700 dark:prose-invert dark:text-gray-300 mt-3">
-        <%= sanitize(@club.rules.html_safe) %>
+        <%= @club.rules %>
       </div>
     </section>
   </div>

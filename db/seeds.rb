@@ -45,7 +45,7 @@ name_suffixes    = %w[Club Team Crew Squad League Collective Association Group N
 
   # Generate HTML rules list using FFaker
   rule_items = Array.new(rand(5..8)) { FFaker::Lorem.sentence(rand(8..16)) }
-  rules = "<ul>\n" + rule_items.map { |s| "  <li>#{s}</li>" }.join("\n") + "\n</ul>\n"
+  rules = "<ol>\n" + rule_items.map { |s| "  <li>#{s}</li>" }.join("\n") + "\n</ol>\n"
 
   owner = users[i % users.length]
 
