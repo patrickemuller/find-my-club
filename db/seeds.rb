@@ -5,9 +5,18 @@ require 'ffaker'
 
 puts "Seeding users..."
 
-FactoryBot.create(:user, admin: true, first_name: 'Developer', last_name: 'Localhost', email: 'developer@example.com', password: 'password')
+# Create or find the developer user
+User.find_or_create_by(email: 'developer@example.com') do |user|
+  user.admin = true
+  user.first_name = 'Developer'
+  user.last_name = 'Localhost'
+  user.password = 'password'
+  user.password_confirmation = 'password'
+  user.confirmed_at = Time.current
+end
 
-users = FactoryBot.create_list(:user, 10)
+# We'll create 500 users total and reuse them across clubs
+users = FactoryBot.create_list(:user, 500)
 
 puts "Seeding clubs..."
 
@@ -60,4 +69,40 @@ name_suffixes    = %w[Club Team Crew Squad League Collective Association Group N
   club.save!
 end
 
-puts "Done."
+puts "Seeding memberships..."
+
+# Add members to each club (10-50 members per club with varied statuses)
+Club.find_each do |club|
+  # Determine how many members this club should have (10-50)
+  member_count = rand(10..50)
+
+  # Get potential members (exclude the club owner)
+  available_users = users.reject { |u| u.id == club.owner_id }
+
+  # Randomly select members for this club
+  selected_members = available_users.sample(member_count)
+
+  selected_members.each_with_index do |user, index|
+    # Distribute statuses: ~70% active, ~20% pending, ~10% disabled
+    status = if index < (member_count * 0.7).to_i
+               'active'
+             elsif index < (member_count * 0.9).to_i
+               'pending'
+             else
+               'disabled'
+             end
+
+    # Create membership if it doesn't exist
+    Membership.find_or_create_by(user: user, club: club) do |membership|
+      membership.status = status
+      membership.role = 'member'
+    end
+  rescue ActiveRecord::RecordInvalid => e
+    # Skip if validation fails (e.g., owner trying to be a member)
+    puts "Skipped membership: #{e.message}"
+  end
+
+  print "."
+end
+
+puts "\nDone."
