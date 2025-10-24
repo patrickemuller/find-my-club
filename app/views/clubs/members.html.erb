@@ -18,100 +18,156 @@
     </div>
   </div>
 
-  <!-- Pending Members Section -->
-  <% if @pending_members.present? %>
-    <section class="mb-8">
-      <h2 class="text-xl font-semibold mb-4">Pending Approval (<%= @pending_members.count %>)</h2>
-      <div class="flex grid grid-cols-2 gap-4">
-        <% @pending_members.each do |membership| %>
-          <div class="w-full rounded-2xl col-span-2 md:col-span-1 border border-yellow-300 bg-yellow-50 dark:border-yellow-600 dark:bg-yellow-900/30 p-5 shadow-sm">
-            <div class="flex items-start justify-between gap-4">
-              <div>
-                <h3 class="text-lg font-semibold dark:text-gray-100"><%= membership.user.first_name %> <%= membership.user.last_name %></h3>
-                <p class="mt-1 text-sm text-gray-600 dark:text-gray-300"><%= membership.user.email %></p>
-                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Requested <%= time_ago_in_words(membership.created_at) %> ago</p>
-              </div>
-              <span class="inline-flex items-center rounded-full bg-yellow-100 px-2 py-1 text-xs font-medium text-yellow-700 dark:bg-yellow-900/50 dark:text-yellow-300">Pending</span>
-            </div>
+  <div data-controller="tabs" data-tabs-default-tab-value="active">
+    <!-- Tabs -->
+    <div class="border-b border-gray-200 dark:border-gray-700">
+      <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+        <a href="#active" data-tab-name="active" data-tabs-target="tab" data-action="click->tabs#select" class="border-orange-500 text-orange-600 dark:text-orange-400 whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium cursor-pointer">
+          Active
+          <span class="ml-2 rounded-full bg-gray-100 dark:bg-gray-700 px-2.5 py-0.5 text-xs font-medium text-gray-900 dark:text-gray-100"><%= @active_members.count %></span>
+        </a>
+        <a href="#pending" data-tab-name="pending" data-tabs-target="tab" data-action="click->tabs#select" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium cursor-pointer">
+          Pending Approval
+          <span class="ml-2 rounded-full bg-gray-100 dark:bg-gray-700 px-2.5 py-0.5 text-xs font-medium text-gray-900 dark:text-gray-100"><%= @pending_members.count %></span>
+        </a>
+        <a href="#disabled" data-tab-name="disabled" data-tabs-target="tab" data-action="click->tabs#select" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium cursor-pointer">
+          Disabled
+          <span class="ml-2 rounded-full bg-gray-100 dark:bg-gray-700 px-2.5 py-0.5 text-xs font-medium text-gray-900 dark:text-gray-100"><%= @disabled_members.count %></span>
+        </a>
+      </nav>
+    </div>
 
-            <div class="mt-4 flex flex-wrap items-center gap-2">
-              <%= button_to "Approve", approve_club_membership_path(@club, membership), method: :patch,
-                  class: "inline-flex items-center rounded-md bg-green-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-green-700" %>
-              <%= button_to "Reject", club_membership_path(@club), method: :delete, params: { membership_id: membership.id },
-                  data: { turbo_confirm: "Are you sure you want to reject #{membership.user.first_name}'s request?" },
-                  class: "inline-flex items-center rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-900 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-100 dark:hover:bg-gray-700" %>
-            </div>
-          </div>
-        <% end %>
-      </div>
-    </section>
-  <% end %>
-
-  <!-- Active Members Section -->
-  <section class="mb-8">
-    <h2 class="text-xl font-semibold mb-4">Active Members (<%= @active_members.count %>)</h2>
-    <% if @active_members.present? %>
-      <div class="flex grid grid-cols-2 gap-4">
-        <% @active_members.each do |membership| %>
-          <div class="w-full rounded-2xl col-span-2 md:col-span-1 border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800">
-            <div class="flex items-start justify-between gap-4">
-              <div>
-                <h3 class="text-lg font-semibold dark:text-gray-100"><%= membership.user.first_name %> <%= membership.user.last_name %></h3>
-                <p class="mt-1 text-sm text-gray-600 dark:text-gray-300"><%= membership.user.email %></p>
-                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Member for <%= time_ago_in_words(membership.created_at) %></p>
-              </div>
-              <span class="inline-flex items-center rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-700 dark:bg-green-900/50 dark:text-green-300">Active</span>
-            </div>
-
-            <div class="mt-4 flex flex-wrap items-center gap-2">
-              <%= button_to "Disable", disable_club_membership_path(@club, membership), method: :patch,
-                  data: { turbo_confirm: "Are you sure you want to disable #{membership.user.first_name}?" },
-                  class: "inline-flex items-center rounded-md border border-yellow-300 bg-yellow-50 px-3 py-1.5 text-sm font-medium text-yellow-800 hover:bg-yellow-500 hover:text-white dark:border-yellow-600 dark:bg-yellow-900/30 dark:text-yellow-300" %>
-              <%= button_to "Remove", club_membership_path(@club), method: :delete, params: { membership_id: membership.id },
-                  data: { turbo_confirm: "Are you sure you want to remove #{membership.user.first_name} from the club? THIS ACTION CANNOT BE UNDONE" },
-                  class: "inline-flex items-center rounded-md bg-red-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-red-700" %>
-            </div>
-          </div>
-        <% end %>
-      </div>
-    <% else %>
-      <div class="w-full rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800">
-        <div class="flex items-start justify-between gap-4">
-          <div>
-            <h3 class="text-lg font-semibold dark:text-gray-100">No active members yet</h3>
-            <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">Share your club to get members!</p>
-          </div>
+    <!-- Tab Content -->
+    <div class="mt-6">
+    <!-- Active Members Tab -->
+    <div id="active-content" data-tab-name="active" data-tabs-target="panel">
+      <% if @active_members.present? %>
+        <div class="overflow-hidden bg-white shadow dark:bg-gray-800 sm:rounded-md">
+          <ul role="list" class="divide-y divide-gray-200 dark:divide-gray-700">
+            <% @active_members.each do |membership| %>
+              <li class="px-4 py-4 sm:px-6">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center min-w-0 flex-1">
+                    <div class="min-w-0 flex-1">
+                      <div class="flex items-center gap-3">
+                        <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                          <%= membership.user.first_name %> <%= membership.user.last_name %>
+                        </p>
+                        <span class="inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700 dark:bg-green-900/50 dark:text-green-300">Active</span>
+                      </div>
+                      <p class="mt-1 text-sm text-gray-600 dark:text-gray-300"><%= membership.user.email %></p>
+                      <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Member for <%= time_ago_in_words(membership.created_at) %></p>
+                    </div>
+                  </div>
+                  <div class="ml-4 flex flex-shrink-0 gap-2">
+                    <%= button_to "Disable", disable_club_membership_path(@club, membership), method: :patch,
+                        data: { turbo_confirm: "Are you sure you want to disable #{membership.user.first_name}?" },
+                        class: "inline-flex items-center rounded-md border border-yellow-300 bg-yellow-50 px-3 py-1.5 text-sm font-medium text-yellow-800 hover:bg-yellow-500 hover:text-white dark:border-yellow-600 dark:bg-yellow-900/30 dark:text-yellow-300" %>
+                    <%= button_to "Remove", club_membership_path(@club), method: :delete, params: { membership_id: membership.id },
+                        data: { turbo_confirm: "Are you sure you want to remove #{membership.user.first_name} from the club? THIS ACTION CANNOT BE UNDONE" },
+                        class: "inline-flex items-center rounded-md bg-red-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-red-700" %>
+                  </div>
+                </div>
+              </li>
+            <% end %>
+          </ul>
         </div>
-      </div>
-    <% end %>
-  </section>
+      <% else %>
+        <div class="text-center py-12">
+          <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+          </svg>
+          <h3 class="mt-2 text-sm font-semibold text-gray-900 dark:text-gray-100">No active members</h3>
+          <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Share your club to get members!</p>
+        </div>
+      <% end %>
+    </div>
 
-  <!-- Disabled Members Section -->
-  <% if @disabled_members.present? %>
-    <section class="mb-8">
-      <h2 class="text-xl font-semibold mb-4">Disabled Members (<%= @disabled_members.count %>)</h2>
-      <div class="flex grid grid-cols-2 gap-4">
-        <% @disabled_members.each do |membership| %>
-          <div class="w-full rounded-2xl col-span-2 md:col-span-1 border border-gray-400 bg-gray-100 dark:border-gray-600 dark:bg-gray-900 p-5 shadow-sm">
-            <div class="flex items-start justify-between gap-4">
-              <div>
-                <h3 class="text-lg font-semibold dark:text-gray-100"><%= membership.user.first_name %> <%= membership.user.last_name %></h3>
-                <p class="mt-1 text-sm text-gray-600 dark:text-gray-300"><%= membership.user.email %></p>
-                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Disabled <%= time_ago_in_words(membership.updated_at) %> ago</p>
-              </div>
-              <span class="inline-flex items-center rounded-full bg-gray-400 px-2 py-1 text-xs font-medium text-gray-700 dark:bg-gray-700 dark:text-gray-300">Disabled</span>
-            </div>
+    <!-- Pending Members Tab -->
+    <div id="pending-content" data-tab-name="pending" data-tabs-target="panel" class="hidden">
+      <% if @pending_members.present? %>
+        <div class="overflow-hidden bg-white shadow dark:bg-gray-800 sm:rounded-md">
+          <ul role="list" class="divide-y divide-gray-200 dark:divide-gray-700">
+            <% @pending_members.each do |membership| %>
+              <li class="px-4 py-4 sm:px-6 bg-yellow-50 dark:bg-yellow-900/10">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center min-w-0 flex-1">
+                    <div class="min-w-0 flex-1">
+                      <div class="flex items-center gap-3">
+                        <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                          <%= membership.user.first_name %> <%= membership.user.last_name %>
+                        </p>
+                        <span class="inline-flex items-center rounded-full bg-yellow-100 px-2 py-0.5 text-xs font-medium text-yellow-700 dark:bg-yellow-900/50 dark:text-yellow-300">Pending</span>
+                      </div>
+                      <p class="mt-1 text-sm text-gray-600 dark:text-gray-300"><%= membership.user.email %></p>
+                      <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Requested <%= time_ago_in_words(membership.created_at) %> ago</p>
+                    </div>
+                  </div>
+                  <div class="ml-4 flex flex-shrink-0 gap-2">
+                    <%= button_to "Approve", approve_club_membership_path(@club, membership), method: :patch,
+                        class: "inline-flex items-center rounded-md bg-green-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-green-700" %>
+                    <%= button_to "Reject", club_membership_path(@club), method: :delete, params: { membership_id: membership.id },
+                        data: { turbo_confirm: "Are you sure you want to reject #{membership.user.first_name}'s request?" },
+                        class: "inline-flex items-center rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-900 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-100 dark:hover:bg-gray-700" %>
+                  </div>
+                </div>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      <% else %>
+        <div class="text-center py-12">
+          <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <h3 class="mt-2 text-sm font-semibold text-gray-900 dark:text-gray-100">No pending requests</h3>
+          <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">No members are waiting for approval.</p>
+        </div>
+      <% end %>
+    </div>
 
-            <div class="mt-4 flex flex-wrap items-center gap-2">
-              <%= button_to "Enable", enable_club_membership_path(@club, membership), method: :patch,
-                  class: "inline-flex items-center rounded-md bg-green-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-green-700" %>
-              <%= button_to "Remove", club_membership_path(@club), method: :delete, params: { membership_id: membership.id },
-                  data: { turbo_confirm: "Are you sure you want to remove #{membership.user.first_name} from the club? THIS ACTION CANNOT BE UNDONE" },
-                  class: "inline-flex items-center rounded-md bg-red-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-red-700" %>
-            </div>
-          </div>
-        <% end %>
-      </div>
-    </section>
-  <% end %>
+    <!-- Disabled Members Tab -->
+    <div id="disabled-content" data-tab-name="disabled" data-tabs-target="panel" class="hidden">
+      <% if @disabled_members.present? %>
+        <div class="overflow-hidden bg-white shadow dark:bg-gray-800 sm:rounded-md">
+          <ul role="list" class="divide-y divide-gray-200 dark:divide-gray-700">
+            <% @disabled_members.each do |membership| %>
+              <li class="px-4 py-4 sm:px-6 bg-gray-50 dark:bg-gray-900/30">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center min-w-0 flex-1">
+                    <div class="min-w-0 flex-1">
+                      <div class="flex items-center gap-3">
+                        <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                          <%= membership.user.first_name %> <%= membership.user.last_name %>
+                        </p>
+                        <span class="inline-flex items-center rounded-full bg-gray-400 px-2 py-0.5 text-xs font-medium text-gray-700 dark:bg-gray-700 dark:text-gray-300">Disabled</span>
+                      </div>
+                      <p class="mt-1 text-sm text-gray-600 dark:text-gray-300"><%= membership.user.email %></p>
+                      <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Disabled <%= time_ago_in_words(membership.updated_at) %> ago</p>
+                    </div>
+                  </div>
+                  <div class="ml-4 flex flex-shrink-0 gap-2">
+                    <%= button_to "Enable", enable_club_membership_path(@club, membership), method: :patch,
+                        class: "inline-flex items-center rounded-md bg-green-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-green-700" %>
+                    <%= button_to "Remove", club_membership_path(@club), method: :delete, params: { membership_id: membership.id },
+                        data: { turbo_confirm: "Are you sure you want to remove #{membership.user.first_name} from the club? THIS ACTION CANNOT BE UNDONE" },
+                        class: "inline-flex items-center rounded-md bg-red-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-red-700" %>
+                  </div>
+                </div>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      <% else %>
+        <div class="text-center py-12">
+          <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+          </svg>
+          <h3 class="mt-2 text-sm font-semibold text-gray-900 dark:text-gray-100">No disabled members</h3>
+          <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">You have no disabled members.</p>
+        </div>
+      <% end %>
+    </div>
+    </div>
+  </div>
 </div>
