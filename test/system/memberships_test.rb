@@ -156,7 +156,10 @@ class MembershipsTest < ApplicationSystemTestCase
 
     visit members_club_path(@private_club)
 
-    within "section", text: "Pending Approval" do
+    # Click on the Pending Approval tab
+    click_link "Pending Approval"
+
+    within "#pending-content" do
       assert_text "Jane"
       click_button "Approve"
     end
@@ -175,7 +178,8 @@ class MembershipsTest < ApplicationSystemTestCase
 
     visit members_club_path(@public_club)
 
-    within "section", text: "Active Members" do
+    # Active tab should be selected by default
+    within "#active-content" do
       assert_text "John"
       accept_confirm do
         click_button "Disable"
@@ -196,7 +200,10 @@ class MembershipsTest < ApplicationSystemTestCase
 
     visit members_club_path(@public_club)
 
-    within "section", text: "Disabled Members" do
+    # Click on the Disabled tab
+    click_link "Disabled"
+
+    within "#disabled-content" do
       assert_text "Bob"
       click_button "Enable"
     end
@@ -215,7 +222,8 @@ class MembershipsTest < ApplicationSystemTestCase
 
     visit members_club_path(@public_club)
 
-    within "section", text: "Active Members" do
+    # Active tab should be selected by default
+    within "#active-content" do
       assert_text "Sarah"
       accept_confirm do
         click_button "Remove"
@@ -240,19 +248,24 @@ class MembershipsTest < ApplicationSystemTestCase
 
     visit members_club_path(@public_club)
 
-    within "section", text: "Active Members" do
+    # Check Active tab (default)
+    within "#active-content" do
       assert_text "Alice"
       assert_no_text "Charlie"
       assert_no_text "Dave"
     end
 
-    within "section", text: "Pending Approval" do
+    # Click on Pending Approval tab and check
+    click_link "Pending Approval"
+    within "#pending-content" do
       assert_text "Charlie"
       assert_no_text "Alice"
       assert_no_text "Dave"
     end
 
-    within "section", text: "Disabled Members" do
+    # Click on Disabled tab and check
+    click_link "Disabled"
+    within "#disabled-content" do
       assert_text "Dave"
       assert_no_text "Alice"
       assert_no_text "Charlie"

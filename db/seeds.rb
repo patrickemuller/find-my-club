@@ -86,11 +86,11 @@ Club.find_each do |club|
     # Distribute statuses: ~70% active, ~20% pending, ~10% disabled
     status = if index < (member_count * 0.7).to_i
                'active'
-             elsif index < (member_count * 0.9).to_i
+    elsif index < (member_count * 0.9).to_i
                'pending'
-             else
+    else
                'disabled'
-             end
+    end
 
     # Create membership if it doesn't exist
     Membership.find_or_create_by(user: user, club: club) do |membership|
