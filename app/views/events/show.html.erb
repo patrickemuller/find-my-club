@@ -63,7 +63,10 @@
 
         <!-- Google Calendar Button -->
         <div class="mt-4">
-          <%= link_to "Add to Google Calendar", google_calendar_url(@event), target: "_blank", rel: "noopener", class: "inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700" %>
+          <%= link_to google_calendar_url(@event), target: "_blank", rel: "noopener", class: "inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700" do %>
+            <%= inline_svg("google_calendar", class: "h-4 w-4 mr-2") %>
+            Google Calendar
+          <% end %>
         </div>
 
         <h2 class="text-lg font-semibold mb-4 mt-4">Participation</h2>
@@ -90,8 +93,11 @@
         <% elsif @event.full? && !@event.has_waitlist? %>
           <!-- Event full, no waitlist -->
           <p class="text-sm text-red-600 dark:text-red-400">This event is full and does not have a waitlist.</p>
+        <!-- User can enter the waitlist -->
+        <% elsif @event.in_progress? && @event.full? && @event.has_waitlist?%>
+          <%= button_to "Join the Waitlist", club_event_event_registrations_path(@club, @event), method: :post, class: "block w-full rounded-md bg-amber-400 px-4 py-2 text-sm font-medium text-white hover:bg-amber-500" %>
+        <!-- User can register -->
         <% elsif @event.in_progress? %>
-          <!-- User can register -->
           <%= button_to "Register for Event", club_event_event_registrations_path(@club, @event), method: :post, class: "block w-full rounded-md bg-orange-600 px-4 py-2 text-sm font-medium text-white hover:bg-orange-700" %>
         <% else %>
           <div class="w-full text-center">
