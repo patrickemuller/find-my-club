@@ -1,0 +1,68 @@
+<%= form_with(model: [club, event], class: "contents") do |form| %>
+  <% if event.errors.any? %>
+    <div class="bg-red-50 text-red-700 px-3 py-2 font-medium rounded-md my-3 border border-red-200 dark:bg-red-900/20 dark:text-red-300 dark:border-red-700">
+      <h2><%= pluralize(event.errors.count, "error") %> prohibited this event from being saved:</h2>
+      <ul class="list-disc ml-6">
+        <% event.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="w-full grid grid-cols-2 gap-4">
+    <div class="col-span-2">
+      <%= form.label :name, class: "block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300" %>
+      <%= form.text_field :name, required: true, placeholder: "Weekly Training Session", class: "block w-full rounded-md p-2 border border-gray-300 bg-white shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100" %>
+    </div>
+
+    <div class="col-span-2 md:col-span-1">
+      <%= form.label :starts_at, "Start Date & Time", class: "block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300" %>
+      <%= form.datetime_field :starts_at, class: "block w-full rounded-md p-2 border border-gray-300 bg-white shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100" %>
+    </div>
+
+    <div class="col-span-2 md:col-span-1">
+      <%= form.label :ends_at, "End Date & Time", class: "block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300" %>
+      <%= form.datetime_field :ends_at, class: "block w-full rounded-md p-2 border border-gray-300 bg-white shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100" %>
+    </div>
+
+    <div class="col-span-2" data-controller="places-autocomplete">
+      <%= form.label :location_name, "Location", class: "block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300" %>
+
+      <!-- Visible autocomplete input -->
+      <%= form.text_field :location_name, placeholder: "Start typing to search for a location...", data: { places_autocomplete_target: "input" }, class: "block w-full rounded-md p-2 border border-gray-300 bg-white shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100" %>
+
+      <!-- Hidden field that stores the actual Google Maps embeddable URL -->
+      <%= form.hidden_field :location, data: { places_autocomplete_target: "hiddenField" } %>
+
+      <!-- Hidden field that stores the location name for display -->
+      <%= form.hidden_field :location_name, data: { places_autocomplete_target: "nameField" } %>
+    </div>
+
+    <div class="col-span-2 md:col-span-1">
+      <%= form.label :max_participants, "Maximum Participants", class: "block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300" %>
+      <%= form.number_field :max_participants, required: true, min: 2, class: "block w-full rounded-md p-2 border border-gray-300 bg-white shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100" %>
+    </div>
+
+    <div class="col-span-2 md:col-span-1">
+      <div class="flex items-center gap-2 mb-1">
+        <%= form.label :has_waitlist, "Enable Waitlist?", class: "block text-sm font-medium text-gray-700 dark:text-gray-300" %>
+        <%= render partial: "shared/tooltip", locals: { text: "If enabled, members can join a waitlist when the event is full. You can then approve them even if it exceeds the maximum." } %>
+      </div>
+      <div class="flex items-center mt-2">
+        <%= form.check_box :has_waitlist, class: "h-4 w-4 rounded border-gray-300 text-orange-600 focus:ring-orange-500 dark:bg-gray-900 dark:border-gray-700" %>
+        <label for="event_has_waitlist" class="ml-2 text-sm text-gray-700 dark:text-gray-300">Allow waitlist when full</label>
+      </div>
+    </div>
+
+    <div class="col-span-2">
+      <%= form.label :description, class: "block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300" %>
+      <%= form.rich_text_area :description, class: "block w-full rounded-md border border-gray-300 bg-white shadow-sm focus:border-orange-500 focus:ring-orange-500" %>
+    </div>
+
+    <div class="col-span-2 flex justify-between mt-4">
+      <%= form.submit (event.persisted? ? "Update Event" : "Create Event"), class: "rounded-md bg-orange-600 px-4 py-2 text-sm font-medium text-white shadow hover:bg-orange-700" %>
+      <%= link_to "Cancel", (event.persisted? ? club_event_path(club, event) : club_events_path(club)), class: "rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-900 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-100 hover:dark:bg-gray-700" %>
+    </div>
+  </div>
+<% end %>

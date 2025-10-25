@@ -1,6 +1,10 @@
 ENV["RAILS_ENV"] ||= "test"
 require_relative "../config/environment"
 require "rails/test_help"
+require "webmock/minitest"
+
+# Configure WebMock to allow local requests but block external ones
+WebMock.disable_net_connect!(allow_localhost: true)
 
 # Ensure Devise mappings are loaded
 Rails.application.reload_routes!

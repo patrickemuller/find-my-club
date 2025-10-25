@@ -65,5 +65,44 @@
         <%= @club.rules %>
       </div>
     </section>
+
+    <!-- Events -->
+    <% if current_user && (@club.has_member?(current_user) || @club.is_owner?(current_user)) %>
+      <section class="my-4">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-2xl font-bold tracking-tight">Upcoming Events</h2>
+          <div class="flex gap-2">
+            <%= link_to "View All Events", club_events_path(@club), class: "text-orange-600 hover:underline text-sm font-medium" %>
+          </div>
+        </div>
+
+        <% if @upcoming_events.any? %>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+            <% @upcoming_events.each do |event| %>
+              <%= render "events/event_card", event: event %>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="rounded-xl border border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800 p-8 text-center">
+            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">No upcoming events</h3>
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+              <% if @club.is_owner?(current_user) %>
+                Get started by creating a new event for your club members.
+              <% else %>
+                Check back later for new events from this club.
+              <% end %>
+            </p>
+            <% if @club.is_owner?(current_user) %>
+              <div class="mt-6">
+                <%= link_to "Create New Event", new_club_event_path(@club), class: "inline-flex items-center rounded-md bg-orange-600 px-3 py-2 text-sm font-semibold text-white shadow hover:bg-orange-700" %>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+      </section>
+    <% end %>
   </div>
 </div>
