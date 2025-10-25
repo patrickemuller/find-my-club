@@ -1,7 +1,7 @@
 class EventRegistrationsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_club_and_event
-  before_action :authorize_owner!, only: [ :approve, :destroy ]
+  before_action :authorize_owner!, only: [ :approve ]
 
   def create
     # Check if user is a member
@@ -57,14 +57,15 @@ class EventRegistrationsController < ApplicationController
     user_name = registration.user.first_name
     registration.destroy!
 
-    message =
-      if @club.is_owner?(current_user)
-        "#{user_name} has been removed from the event."
-      else
-        "You have cancelled your registration."
-      end
+    if @club.is_owner?(current_user)
+      message = "#{user_name} has been removed from the event."
+      redirect_path = registrations_club_event_path(@club, @event)
+    else
+      message = "You have cancelled your registration."
+      redirect_path = club_event_path(@club, @event)
+    end
 
-    redirect_to club_event_path(@club, @event), notice: message, status: :see_other
+    redirect_to redirect_path, notice: message, status: :see_other
   end
 
   def approve

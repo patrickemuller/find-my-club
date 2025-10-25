@@ -69,16 +69,8 @@
         <h2 class="text-lg font-semibold mb-4 mt-4">Participation</h2>
 
         <p class="text-sm text-gray-600 dark:text-gray-300 mb-4">
-          <%= @event.confirmed_participants_count %> / <%= @event.max_participants %> participants
+          <%= @event.confirmed_participants_count %> / <%= @event.max_participants %> participants <%= "(#{@event.waitlist_participants_count} in waitlist)" if @event.has_waitlist?%>
         </p>
-
-        <% if @event.full? && @event.has_waitlist? %>
-          <p class="text-sm text-yellow-600 dark:text-yellow-400 mb-4">
-            Event is full. <%= @event.waitlist_participants_count %> on waitlist.
-          </p>
-        <% elsif @event.full? %>
-          <p class="text-sm text-red-600 dark:text-red-400 mb-4">Event is FULL</p>
-        <% end %>
 
         <% if @club.is_owner?(current_user) && @event.in_progress? %>
           <!-- Owner view -->
