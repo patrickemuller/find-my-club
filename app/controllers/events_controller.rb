@@ -7,6 +7,14 @@ class EventsController < ApplicationController
   def index
     @upcoming_events = @club.events.upcoming
     @past_events = @club.events.past
+    @events_json = @club.events.order(starts_at: :asc).map do |event|
+      {
+        id: event.id,
+        name: event.name,
+        starts_at: event.starts_at.iso8601,
+        url: club_event_path(@club, event)
+      }
+    end.to_json
   end
 
   def show

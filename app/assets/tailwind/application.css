@@ -1,2 +1,9 @@
 @import "tailwindcss";
+
+/* Import some base and useful plugins */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@tailwind elements;
+
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
