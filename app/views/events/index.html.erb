@@ -1,0 +1,63 @@
+<% content_for :title, "#{@club.name} - Events" %>
+
+<div class="mx-auto w-full md:mt-8">
+  <!-- Page header -->
+  <div class="mb-6">
+    <h1 class="text-3xl font-bold tracking-tight"><%= @club.name %> Events</h1>
+    <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">View and join club events</p>
+  </div>
+
+  <% if @club.is_owner?(current_user) %>
+    <div class="mb-6">
+      <%= link_to new_club_event_path(@club), class: "inline-flex items-center rounded-md bg-orange-600 px-4 py-2 text-sm font-medium text-white shadow hover:bg-orange-700" do %>
+        Create New Event
+      <% end %>
+    </div>
+  <% end %>
+
+  <div data-controller="tabs" data-tabs-default-tab-value="upcoming">
+    <!-- Tabs -->
+    <div class="border-b border-gray-200 dark:border-gray-700">
+      <nav class="-mb-px flex space-x-8">
+        <a href="#upcoming" data-tab-name="upcoming" data-tabs-target="tab" data-action="click->tabs#select" class="border-orange-500 text-orange-600 dark:text-orange-400 whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium cursor-pointer">
+          Upcoming Events
+          <span class="ml-2 rounded-full bg-gray-100 dark:bg-gray-700 px-2.5 py-0.5 text-xs font-medium text-gray-900 dark:text-gray-100"><%= @upcoming_events.count %></span>
+        </a>
+        <a href="#past" data-tab-name="past" data-tabs-target="tab" data-action="click->tabs#select" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium cursor-pointer">
+          Past Events
+          <span class="ml-2 rounded-full bg-gray-100 dark:bg-gray-700 px-2.5 py-0.5 text-xs font-medium text-gray-900 dark:text-gray-100"><%= @past_events.count %></span>
+        </a>
+      </nav>
+    </div>
+
+    <!-- Upcoming Tab -->
+    <div id="upcoming-content" data-tab-name="upcoming" data-tabs-target="panel" class="mt-6">
+      <% if @upcoming_events.present? %>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <%= render partial: "events/event_card", collection: @upcoming_events, as: :event %>
+        </div>
+      <% else %>
+        <div class="text-center py-12">
+          <p class="text-gray-500 dark:text-gray-400">No upcoming events</p>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Past Tab -->
+    <div id="past-content" data-tab-name="past" data-tabs-target="panel" class="mt-6 hidden">
+      <% if @past_events.present? %>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <%= render partial: "events/event_card", collection: @past_events, as: :event %>
+        </div>
+      <% else %>
+        <div class="text-center py-12">
+          <p class="text-gray-500 dark:text-gray-400">No past events</p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="mt-6">
+    <%= link_to "← Back to Club", club_path(@club), class: "text-orange-600 hover:underline" %>
+  </div>
+</div>

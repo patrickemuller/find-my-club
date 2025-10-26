@@ -26,6 +26,11 @@ class ClubsController < ApplicationController
     if @club.disabled?
       render file: "#{Rails.root}/public/404.html", layout: false, status: :not_found
     end
+
+    # Load upcoming events for members and owners (limit to 3 for preview)
+    if current_user && (@club.has_member?(current_user) || @club.is_owner?(current_user))
+      @upcoming_events = @club.events.upcoming.limit(6)
+    end
   end
 
   def new

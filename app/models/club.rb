@@ -55,6 +55,9 @@ class Club < ApplicationRecord
   has_many :memberships, dependent: :destroy
   has_many :members, through: :memberships, source: :user
 
+  # Events
+  has_many :events, dependent: :destroy
+
   validates :name, :category, :level, presence: true
   validates :description, :rules, presence: true
   validates :public, inclusion: { in: [ true, false ] }

@@ -45,6 +45,8 @@ gem "image_processing", "~> 1.2"
 # Use friendly_id for slugged IDs[https://github.com/norman/friendly_id]
 gem "friendly_id"
 
+gem "dotenv-rails"
+
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
@@ -76,4 +78,6 @@ group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem "capybara"
   gem "selenium-webdriver"
+  # Stub HTTP requests in tests [https://github.com/bblimke/webmock]
+  gem "webmock"
 end

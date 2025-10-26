@@ -13,6 +13,9 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   root "pages#home"
 
+  # Places autocomplete API endpoint
+  get "places/autocomplete", to: "places#autocomplete"
+
   resources :clubs do
     # Membership actions (join/leave)
     resource :membership, only: [ :create, :destroy ]
@@ -23,6 +26,19 @@ Rails.application.routes.draw do
         patch :approve
         patch :enable
         patch :disable
+      end
+    end
+
+    # Events
+    resources :events do
+      member do
+        get :registrations  # Owner view of all registrations
+      end
+
+      resources :event_registrations, only: [ :create, :destroy ] do
+        member do
+          patch :approve
+        end
       end
     end
 

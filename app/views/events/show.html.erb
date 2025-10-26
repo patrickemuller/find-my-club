@@ -1,0 +1,115 @@
+<% content_for :title, "#{@event.name}" %>
+
+<div class="mx-auto w-full md:mt-8">
+  <!-- Header -->
+  <div class="mb-6">
+    <h1 class="text-3xl font-bold tracking-tight"><%= @event.name %></h1>
+    <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">
+      Organized by <%= link_to @club.owner.first_name + " " + @club.owner.last_name, "#", class: "text-orange-600 hover:underline" %>
+    </p>
+  </div>
+
+  <!-- Event Details Card -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Main content -->
+    <div class="lg:col-span-2 space-y-6">
+      <!-- Location -->
+      <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+        <!-- Description -->
+        <h2 class="text-lg font-semibold mb-4">Description</h2>
+        <div class="prose prose-sm max-w-none dark:prose-invert mb-4">
+          <%= @event.description %>
+        </div>
+
+        <h2 class="text-lg font-semibold mb-4">Location</h2>
+
+        <% if @event.location_name.present? %>
+          <p class="text-sm text-gray-600 dark:text-gray-300 mb-4"><%= @event.location_name %></p>
+        <% end %>
+
+        <!-- Embedded Google Maps -->
+        <div class="aspect-video w-full mb-4 rounded-lg overflow-hidden">
+          <iframe
+            width="100%"
+            height="100%"
+            style="border:0"
+            loading="lazy"
+            allowfullscreen
+            referrerpolicy="no-referrer-when-downgrade"
+            src="<%= google_maps_embed_url(@event.location) %>">
+          </iframe>
+        </div>
+
+        <!-- Link to open in Google Maps -->
+        <%= link_to @event.location, target: "_blank", rel: "noopener", class: "inline-flex items-center text-orange-600 hover:underline text-sm" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+          Open in Google Maps
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="space-y-6">
+      <!-- Registration Card -->
+      <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+        <h2 class="text-lg font-semibold mb-4">Date & Time</h2>
+        <p class="text-sm text-gray-600 dark:text-gray-300">
+          <strong>Starts:</strong> <%= @event.starts_at.strftime("%A, %B %d, %Y at %I:%M %p") %><br>
+          <strong>Ends:</strong> <%= @event.ends_at.strftime("%A, %B %d, %Y at %I:%M %p") %>
+        </p>
+
+        <!-- Google Calendar Button -->
+        <div class="mt-4">
+          <%= link_to google_calendar_url(@event), target: "_blank", rel: "noopener", class: "inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700" do %>
+            <%= inline_svg("google_calendar", class: "h-4 w-4 mr-2") %>
+            Google Calendar
+          <% end %>
+        </div>
+
+        <h2 class="text-lg font-semibold mb-4 mt-4">Participation</h2>
+
+        <p class="text-sm text-gray-600 dark:text-gray-300 mb-4">
+          <%= @event.confirmed_participants_count %> / <%= @event.max_participants %> participants <%= "(#{@event.waitlist_participants_count} in waitlist)" if @event.has_waitlist?%>
+        </p>
+
+        <% if @club.is_owner?(current_user) && @event.in_progress? %>
+          <!-- Owner view -->
+          <%= link_to "Manage Registrations", registrations_club_event_path(@club, @event), class: "mt-4 block w-full text-center rounded-md bg-orange-600 px-4 py-2 text-sm font-medium text-white hover:bg-orange-700" %>
+          <%= link_to "Edit Event", edit_club_event_path(@club, @event), class: "mt-4 block w-full text-center rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-700" %>
+          <%= button_to "Delete Event", club_event_path(@club, @event), method: :delete, data: { turbo_confirm: "Are you sure? This will delete the event and all registrations." }, class: "mt-4 block w-full rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700" %>
+        <% elsif @event.user_registered?(current_user) %>
+          <!-- User already registered -->
+          <% status = @event.user_registration_status(current_user) %>
+          <% if status == "confirmed" %>
+            <span class="inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-700 dark:bg-green-900/50 dark:text-green-300 mb-4">Registered</span>
+          <% elsif status == "waitlist" %>
+            <span class="inline-flex items-center rounded-full bg-yellow-100 px-3 py-1 text-sm font-medium text-yellow-700 dark:bg-yellow-900/50 dark:text-yellow-300 mb-4">On Waitlist</span>
+          <% end %>
+
+          <%= button_to "Cancel Registration", club_event_event_registration_path(@club, @event, @event.event_registrations.find_by(user: current_user)), method: :delete, data: { turbo_confirm: "Are you sure you want to cancel your registration?" }, class: "block w-full rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-700" %>
+        <% elsif @event.full? && !@event.has_waitlist? %>
+          <!-- Event full, no waitlist -->
+          <p class="text-sm text-red-600 dark:text-red-400">This event is full and does not have a waitlist.</p>
+        <!-- User can enter the waitlist -->
+        <% elsif @event.in_progress? && @event.full? && @event.has_waitlist?%>
+          <%= button_to "Join the Waitlist", club_event_event_registrations_path(@club, @event), method: :post, class: "block w-full rounded-md bg-amber-400 px-4 py-2 text-sm font-medium text-white hover:bg-amber-500" %>
+        <!-- User can register -->
+        <% elsif @event.in_progress? %>
+          <%= button_to "Register for Event", club_event_event_registrations_path(@club, @event), method: :post, class: "block w-full rounded-md bg-orange-600 px-4 py-2 text-sm font-medium text-white hover:bg-orange-700" %>
+        <% else %>
+          <div class="w-full text-center">
+            <span class="disabled block w-full rounded-md px-4 py-2 text-sm font-medium cursor-disabled">This event is closed</span>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Back link -->
+  <div class="mt-6">
+    <%= link_to "← Back to Events", club_events_path(@club), class: "text-orange-600 hover:underline" %>
+  </div>
+</div>
