@@ -1,0 +1,70 @@
+<div data-controller="calendar" data-calendar-events-value='<%= @events_json.html_safe %>' class="lg:flex lg:h-full lg:flex-col">
+  <header class="flex items-center justify-between border-b border-gray-200 py-4 lg:flex-none dark:border-white/10">
+    <h1 class="text-xl font-semibold text-gray-900 dark:text-white">
+      <time data-calendar-target="monthDisplay" datetime="2022-01">January 2022</time>
+    </h1>
+    <div class="flex items-center">
+      <div class="relative flex items-center rounded-md bg-white shadow-xs outline -outline-offset-1 outline-gray-300 md:items-stretch dark:bg-white/10 dark:shadow-none dark:outline-white/5">
+        <button type="button"
+                data-action="click->calendar#previousMonth"
+                class="flex h-9 w-12 items-center justify-center rounded-l-md pr-1 text-gray-400 hover:text-gray-500 focus:relative md:w-9 md:pr-0 md:hover:bg-gray-50 dark:hover:text-white dark:md:hover:bg-white/10">
+          <span class="sr-only">Previous month</span>
+          <svg viewBox="0 0 20 20" fill="currentColor" data-slot="icon" aria-hidden="true" class="size-5">
+            <path d="M11.78 5.22a.75.75 0 0 1 0 1.06L8.06 10l3.72 3.72a.75.75 0 1 1-1.06 1.06l-4.25-4.25a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0Z" clip-rule="evenodd" fill-rule="evenodd"/>
+          </svg>
+        </button>
+        <button type="button"
+                data-action="click->calendar#goToToday"
+                class="hidden px-3.5 text-sm font-semibold text-gray-900 hover:bg-gray-50 focus:relative md:block dark:text-white dark:hover:bg-white/10">
+          Today
+        </button>
+        <span class="relative -mx-px h-5 w-px bg-gray-300 md:hidden dark:bg-white/10"></span>
+        <button type="button"
+                data-action="click->calendar#nextMonth"
+                class="flex h-9 w-12 items-center justify-center rounded-r-md pl-1 text-gray-400 hover:text-gray-500 focus:relative md:w-9 md:pl-0 md:hover:bg-gray-50 dark:hover:text-white dark:md:hover:bg-white/10">
+          <span class="sr-only">Next month</span>
+          <svg viewBox="0 0 20 20" fill="currentColor" data-slot="icon" aria-hidden="true" class="size-5">
+            <path d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" fill-rule="evenodd"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+  <div class="shadow-sm ring-1 ring-black/5 lg:flex lg:flex-auto lg:flex-col dark:shadow-none dark:ring-white/5">
+    <div class="grid grid-cols-7 gap-px border-b border-gray-300 bg-gray-200 text-center text-xs/6 font-semibold text-gray-700 lg:flex-none dark:border-white/5 dark:bg-white/15 dark:text-gray-300">
+      <div class="flex justify-center bg-white py-2 dark:bg-gray-900">
+        <span>M</span>
+        <span class="sr-only sm:not-sr-only">on</span>
+      </div>
+      <div class="flex justify-center bg-white py-2 dark:bg-gray-900">
+        <span>T</span>
+        <span class="sr-only sm:not-sr-only">ue</span>
+      </div>
+      <div class="flex justify-center bg-white py-2 dark:bg-gray-900">
+        <span>W</span>
+        <span class="sr-only sm:not-sr-only">ed</span>
+      </div>
+      <div class="flex justify-center bg-white py-2 dark:bg-gray-900">
+        <span>T</span>
+        <span class="sr-only sm:not-sr-only">hu</span>
+      </div>
+      <div class="flex justify-center bg-white py-2 dark:bg-gray-900">
+        <span>F</span>
+        <span class="sr-only sm:not-sr-only">ri</span>
+      </div>
+      <div class="flex justify-center bg-white py-2 dark:bg-gray-900">
+        <span>S</span>
+        <span class="sr-only sm:not-sr-only">at</span>
+      </div>
+      <div class="flex justify-center bg-white py-2 dark:bg-gray-900">
+        <span>S</span>
+        <span class="sr-only sm:not-sr-only">un</span>
+      </div>
+    </div>
+    <div class="flex bg-gray-200 text-xs/6 text-gray-700 lg:flex-auto dark:bg-white/10 dark:text-gray-300">
+      <div data-calendar-target="grid" class="w-full grid grid-cols-7 grid-rows-6 gap-px">
+        <!-- Calendar grid will be populated by Stimulus controller -->
+      </div>
+    </div>
+  </div>
+</div>
