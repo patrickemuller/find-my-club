@@ -29,8 +29,8 @@ FactoryBot.define do
     association :club
     sequence(:name) { |n| "Training Session #{n}" }
     description { "Join us for an awesome training session!" }
-    location { "https://maps.google.com/?q=Gym+Downtown" }
-    location_name { "Gym Downtown" }
+    location { "https://maps.google.com/?q=Gym+Downtown+Vancouver" }
+    location_name { "Gym Downtown Vancouver" }
     starts_at { 1.day.from_now }
     ends_at { 1.day.from_now + 2.hours }
     max_participants { 10 }

@@ -1,13 +1,13 @@
 source "https://rubygems.org"
 
 # Use specific branch of Rails
-gem "rails", "~> 8.1"
+gem "rails"
 # The modern asset pipeline for Rails [https://github.com/rails/propshaft]
 gem "propshaft"
 # Use postgresql as the database for Active Record
-gem "pg", "~> 1.1"
+gem "pg"
 # Use the Puma web server [https://github.com/puma/puma]
-gem "puma", "~> 7.1.0"
+gem "puma"
 # Use JavaScript with ESM import maps [https://github.com/rails/importmap-rails]
 gem "importmap-rails"
 # Hotwire's SPA-like page accelerator [https://turbo.hotwired.dev]
@@ -15,7 +15,7 @@ gem "turbo-rails"
 # Hotwire's modest JavaScript framework [https://stimulus.hotwired.dev]
 gem "stimulus-rails"
 # Use Tailwind CSS [https://github.com/rails/tailwindcss-rails]
-gem "tailwindcss-rails"
+gem "tailwindcss-rails", "~> 4.1"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 gem "jbuilder"
 
@@ -40,7 +40,7 @@ gem "kamal", require: false
 gem "thruster", require: false
 
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
-gem "image_processing", "~> 1.2"
+gem "image_processing"
 
 # Use friendly_id for slugged IDs[https://github.com/norman/friendly_id]
 gem "friendly_id"
@@ -58,7 +58,7 @@ group :development, :test do
   gem "rubocop-rails-omakase", require: false
   gem "factory_bot_rails"
   gem "ffaker"
-  gem "rails-controller-testing"
+  gem "rspec-rails", "~> 8.0"
 end
 
 # Authentication for Rails applications [https://github.com/heartcombo/devise]
@@ -80,4 +80,6 @@ group :test do
   gem "selenium-webdriver"
   # Stub HTTP requests in tests [https://github.com/bblimke/webmock]
   gem "webmock"
+  # Database cleaner for managing test database state [https://github.com/DatabaseCleaner/database_cleaner]
+  gem "database_cleaner-active_record"
 end
