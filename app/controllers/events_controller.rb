@@ -24,8 +24,8 @@ class EventsController < ApplicationController
       return
     end
 
-    @confirmed_registrations = @event.event_registrations.confirmed.includes(:user)
-    @waitlist_registrations = @event.event_registrations.waitlist.includes(:user)
+    @confirmed_registrations = @event.event_registrations.confirmed.includes(:user).order(:created_at)
+    @waitlist_registrations = @event.event_registrations.waitlist.includes(:user).order(:created_at)
   end
 
   def new

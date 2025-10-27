@@ -1,11 +1,11 @@
 <% content_for :title, "#{@event.name}" %>
 
-<div class="mx-auto w-full md:mt-8">
+<div class="mx-auto w-full md:mt-8" data-controller="participants-modal">
   <!-- Header -->
   <div class="mb-6">
     <h1 class="text-3xl font-bold tracking-tight"><%= @event.name %></h1>
     <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">
-      Organized by <%= link_to @club.owner.first_name + " " + @club.owner.last_name, "#", class: "text-orange-600 hover:underline" %>
+      Organized by <span class="font-bold"><%= @club.owner.first_name + " " + @club.owner.last_name %></span>
     </p>
   </div>
 
@@ -72,7 +72,10 @@
         <h2 class="text-lg font-semibold mb-4 mt-4">Participation</h2>
 
         <p class="text-sm text-gray-600 dark:text-gray-300 mb-4">
-          <%= @event.confirmed_participants_count %> / <%= @event.max_participants %> participants <%= "(#{@event.waitlist_participants_count} in waitlist)" if @event.has_waitlist?%>
+          <a href="#" class="hover:text-orange-600 dark:hover:text-orange-400 cursor-pointer" data-action="click->participants-modal#open">
+            <%= @event.confirmed_participants_count %> / <%= @event.max_participants %> participants
+            <%= "(#{@event.waitlist_participants_count} in waitlist)" if @event.has_waitlist?%>
+          </a>
         </p>
 
         <% if @club.is_owner?(current_user) && @event.in_progress? %>
@@ -111,5 +114,67 @@
   <!-- Back link -->
   <div class="mt-6">
     <%= link_to "← Back to Events", club_events_path(@club), class: "text-orange-600 hover:underline" %>
+  </div>
+
+  <!-- Participants Modal -->
+  <div data-participants-modal-target="modal" class="hidden fixed inset-0 z-50 overflow-y-auto">
+    <!-- Background overlay -->
+    <div class="fixed inset-0 bg-gray-500 opacity-50 dark:bg-gray-900 dark:opacity-50 transition-opacity" data-action="click->participants-modal#closeOnBackdrop"></div>
+
+    <!-- Modal panel -->
+    <div class="flex items-center justify-center min-h-screen px-4 py-8">
+      <div class="relative bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all max-w-lg w-full">
+        <div class="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+          <div class="flex justify-between items-start mb-4">
+            <h3 class="text-2xl font-semibold text-gray-900 dark:text-gray-100">Event Participants</h3>
+            <button type="button" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300" data-action="click->participants-modal#close">
+              <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+
+          <div>
+            <!-- Confirmed Participants -->
+            <div class="mb-6">
+              <h4 class="text-lg font-semibold text-orange-600 dark:text-orange-400 mb-3">Confirmed Participants</h4>
+              <div class="space-y-1">
+                <% if @confirmed_registrations.any? %>
+                  <% @confirmed_registrations.each do |registration| %>
+                    <div class="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700 last:border-0">
+                      <span class="font-medium text-gray-900 dark:text-gray-100"><%= registration.user.first_name %></span>
+                      <span class="text-sm text-gray-500 dark:text-gray-400"><%= registration.created_at.strftime("%B %d, %Y at %I:%M %p") %></span>
+                    </div>
+                  <% end %>
+                <% else %>
+                  <p class="text-lg">No confirmed participants yet.</p>
+                <% end %>
+              </div>
+            </div>
+
+            <!-- Waitlist -->
+            <% if @waitlist_registrations.any? %>
+              <div>
+                <h4 class="text-lg font-semibold text-orange-600 dark:text-orange-400 mb-3">Waitlist</h4>
+                <div class="space-y-1">
+                  <% @waitlist_registrations.each do |registration| %>
+                    <div class="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700 last:border-0">
+                      <span class="font-medium text-gray-900 dark:text-gray-100"><%= registration.user.first_name %></span>
+                      <span class="text-sm text-gray-500 dark:text-gray-400"><%= registration.created_at.strftime("%B %d, %Y at %I:%M %p") %></span>
+                    </div>
+                  <% end %>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        </div>
+
+        <div class="bg-gray-50 dark:bg-gray-900 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+          <button type="button" class="w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-4 py-2 bg-white dark:bg-gray-800 text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none sm:mt-0sm:text-sm" data-action="click->participants-modal#close">
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

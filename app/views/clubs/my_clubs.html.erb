@@ -31,7 +31,7 @@
               <p class="mt-1 text-sm text-gray-600 dark:text-gray-300"><%= club.formatted_level %></p>
               <p class="mt-1 text-sm text-gray-600 dark:text-gray-300"><%= club.members_count %> <%= 'member'.pluralize(club.members_count) %></p>
             </div>
-            <span class="inline-flex items-center rounded-full bg-orange-100 px-2 py-1 text-xs font-medium text-orange-700"><%= club.is_owner?(current_user) ? "Owner" : "Member" %></span>
+            <span class="inline-flex items-center rounded-full bg-orange-100 px-2 py-1 text-xs font-medium text-orange-600"><%= club.is_owner?(current_user) ? "Owner" : "Member" %></span>
           </div>
 
           <div class="mt-4 flex flex-wrap items-center gap-2">
