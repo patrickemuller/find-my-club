@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Docker setup script for Rec Atlas
+# Docker setup script for Find My Club
 # This script helps new developers get started with Docker quickly
 
 set -e
 
-echo "🐳 Rec Atlas Docker Setup"
+echo "🐳 Find My Club Docker Setup"
 echo "=========================="
 echo ""
 
@@ -95,7 +95,7 @@ echo "=========================================="
 echo "✨ Setup Complete!"
 echo "=========================================="
 echo ""
-echo "Your Rec Atlas development environment is ready!"
+echo "Your Find My Club development environment is ready!"
 echo ""
 echo "📍 Access the application at: http://localhost:3000"
 echo "📍 PostgreSQL is running on: localhost:5432"
