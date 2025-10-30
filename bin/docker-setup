@@ -1,0 +1,113 @@
+#!/usr/bin/env bash
+# Docker setup script for Rec Atlas
+# This script helps new developers get started with Docker quickly
+
+set -e
+
+echo "🐳 Rec Atlas Docker Setup"
+echo "=========================="
+echo ""
+
+# Check if Docker is running
+if ! docker info > /dev/null 2>&1; then
+  echo "❌ Error: Docker is not running"
+  echo "Please start Docker Desktop and try again"
+  exit 1
+fi
+
+echo "✅ Docker is running"
+echo ""
+
+# Check if .env exists
+if [ ! -f .env ]; then
+  echo "❌ Error: .env file not found"
+  echo ""
+  echo "Please create a .env file with the following content:"
+  echo ""
+  echo "GOOGLE_MAPS_API_KEY=your_api_key_here"
+  echo ""
+  echo "Ask a team member for the actual API key values"
+  exit 1
+fi
+
+echo "✅ .env file found"
+echo ""
+
+# Check if docker-compose.yml exists
+if [ ! -f docker-compose.yml ]; then
+  echo "❌ Error: docker-compose.yml not found"
+  exit 1
+fi
+
+echo "✅ docker-compose.yml found"
+echo ""
+
+# Ask if user wants to clean start
+echo "Do you want to start fresh (removes existing containers and volumes)? [y/N]"
+read -r response
+if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
+  echo "🧹 Cleaning up existing containers and volumes..."
+  docker-compose down -v
+  echo "✅ Cleanup complete"
+  echo ""
+fi
+
+# Build and start services
+echo "🔨 Building Docker images (this may take a few minutes)..."
+docker-compose build
+
+echo ""
+echo "🚀 Starting services..."
+docker-compose up -d
+
+echo ""
+echo "⏳ Waiting for database to be ready..."
+sleep 5
+
+# Check if services are running
+if ! docker-compose ps | grep -q "Up"; then
+  echo "❌ Error: Services failed to start"
+  echo "Check logs with: docker-compose logs"
+  exit 1
+fi
+
+echo "✅ Services are running"
+echo ""
+
+# Setup database
+echo "📊 Setting up database..."
+if docker-compose exec -T web bin/rails db:create; then
+  echo "✅ Database created"
+else
+  echo "ℹ️  Database already exists (this is fine)"
+fi
+
+echo ""
+echo "🔄 Running migrations..."
+docker-compose exec -T web bin/rails db:migrate
+
+echo ""
+echo "🌱 Loading seed data..."
+docker-compose exec -T web bin/rails db:seed
+
+echo ""
+echo "=========================================="
+echo "✨ Setup Complete!"
+echo "=========================================="
+echo ""
+echo "Your Rec Atlas development environment is ready!"
+echo ""
+echo "📍 Access the application at: http://localhost:3000"
+echo "📍 PostgreSQL is running on: localhost:5432"
+echo ""
+echo "Useful commands:"
+echo "  View logs:        docker-compose logs -f web"
+echo "  Rails console:    docker-compose exec web bin/rails console"
+echo "  Run tests:        docker-compose exec web bundle exec rspec"
+echo "  Stop services:    docker-compose down"
+echo "  Restart services: docker-compose restart"
+echo ""
+echo "📚 For more information, see:"
+echo "  - DOCKER.md (complete Docker documentation)"
+echo "  - DOCKER_SETUP_SUMMARY.md (quick reference)"
+echo ""

@@ -1,14 +1,22 @@
 # syntax=docker/dockerfile:1
 # check=error=true
 
-# This Dockerfile is designed for production, not development. Use with Kamal or build'n'run by hand:
-# docker build -t find_my_club .
-# docker run -d -p 80:80 -e RAILS_MASTER_KEY=<value from config/master.key> --name find_my_club find_my_club
-
-# For a containerized dev environment, see Dev Containers: https://guides.rubyonrails.org/getting_started_with_devcontainer.html
+# PRODUCTION Dockerfile
+# This Dockerfile is designed for production deployment only.
+#
+# For development, use Dockerfile.dev with docker-compose.yml
+#
+# Production build:
+#   docker build -t find_my_club .
+#   docker run -d -p 80:80 -e RAILS_MASTER_KEY=<value from config/master.key> --name find_my_club find_my_club
+#
+# Used by:
+#   - Kamal deployment (.kamal/)
+#   - Heroku deployment
+#   - Production environments
 
 # Make sure RUBY_VERSION matches the Ruby version in .ruby-version
-ARG RUBY_VERSION=3.4.3
+ARG RUBY_VERSION=3.4.5
 FROM docker.io/library/ruby:$RUBY_VERSION-slim AS base
 
 # Rails app lives here
@@ -46,10 +54,8 @@ COPY . .
 RUN bundle exec bootsnap precompile app/ lib/
 
 # Precompiling assets for production without requiring secret RAILS_MASTER_KEY
-RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
-
-
-
+# This is not needed, since all assets are gonna be served by the TailwindCSS compiler
+# RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
 
 # Final stage for app image
 FROM base
