@@ -14,7 +14,7 @@ RSpec.describe "Clubs", type: :request do
     end
 
     context "when authenticated" do
-      before { sign_in user }
+      before { login_as user }
 
       it "returns successful response" do
         get my_clubs_path
@@ -32,7 +32,7 @@ RSpec.describe "Clubs", type: :request do
     end
 
     context "when authenticated as non-owner" do
-      before { sign_in user }
+      before { login_as user }
 
       it "returns not found" do
         get members_club_path(club)
@@ -41,7 +41,7 @@ RSpec.describe "Clubs", type: :request do
     end
 
     context "when authenticated as owner" do
-      before { sign_in owner }
+      before { login_as owner }
 
       it "returns successful response" do
         get members_club_path(club)
@@ -61,7 +61,7 @@ RSpec.describe "Clubs", type: :request do
     end
 
     context "when authenticated as non-owner" do
-      before { sign_in user }
+      before { login_as user }
 
       it "returns not found" do
         patch enable_club_path(club)
@@ -70,7 +70,7 @@ RSpec.describe "Clubs", type: :request do
     end
 
     context "when authenticated as owner" do
-      before { sign_in owner }
+      before { login_as owner }
 
       it "enables the club" do
         expect {
@@ -96,7 +96,7 @@ RSpec.describe "Clubs", type: :request do
     end
 
     context "when authenticated as non-owner" do
-      before { sign_in user }
+      before { login_as user }
 
       it "returns not found" do
         patch disable_club_path(club)
@@ -105,7 +105,7 @@ RSpec.describe "Clubs", type: :request do
     end
 
     context "when authenticated as owner" do
-      before { sign_in owner }
+      before { login_as owner }
 
       it "disables the club" do
         expect {

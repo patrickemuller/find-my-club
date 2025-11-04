@@ -4,7 +4,7 @@ RSpec.describe "Places", type: :request do
   let(:user) { create(:user) }
 
   before do
-    sign_in user
+    login_as user
     # Set up API key for tests
     ENV["GOOGLE_MAPS_AUTOCOMPLETE_API_KEY"] = "test_api_key"
   end
