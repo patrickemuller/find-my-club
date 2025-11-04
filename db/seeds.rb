@@ -5,7 +5,7 @@ require 'ffaker'
 
 puts "Seeding users..."
 
-# Create or find the developer user
+# Create or find the developer user with full profile
 User.find_or_create_by(email: 'developer@example.com') do |user|
   user.admin = true
   user.first_name = 'Developer'
@@ -13,6 +13,57 @@ User.find_or_create_by(email: 'developer@example.com') do |user|
   user.password = 'password'
   user.password_confirmation = 'password'
   user.confirmed_at = Time.current
+  user.strava_url = 'https://www.strava.com/athletes/12004453'
+  user.trailforks_url = 'https://www.trailforks.com/profile/patrickemuller/'
+  user.outside_url = 'https://www.outsideinc.com/developer'
+  user.athlinks_url = 'https://www.athlinks.com/athletes/12345'
+end
+
+# Create a few additional featured users with complete profiles
+featured_users_data = [
+  {
+    email: 'sarah.runner@example.com',
+    first_name: 'Sarah',
+    last_name: 'Runner',
+    strava_url: 'https://www.strava.com/athletes/23456789',
+    outside_url: 'https://www.outsideinc.com/sarah-runner',
+    athlinks_url: 'https://www.athlinks.com/athletes/23456'
+  },
+  {
+    email: 'mike.cyclist@example.com',
+    first_name: 'Mike',
+    last_name: 'Cyclist',
+    strava_url: 'https://www.strava.com/athletes/34567890',
+    trailforks_url: 'https://www.trailforks.com/profile/mikecyclist/'
+  },
+  {
+    email: 'emma.hiker@example.com',
+    first_name: 'Emma',
+    last_name: 'Hiker',
+    trailforks_url: 'https://www.trailforks.com/profile/emmahiker/',
+    outside_url: 'https://www.outsideinc.com/emma-hiker'
+  },
+  {
+    email: 'alex.swimmer@example.com',
+    first_name: 'Alex',
+    last_name: 'Swimmer',
+    athlinks_url: 'https://www.athlinks.com/athletes/34567',
+    outside_url: 'https://www.outsideinc.com/alex-swimmer'
+  }
+]
+
+featured_users_data.each do |user_data|
+  User.find_or_create_by(email: user_data[:email]) do |user|
+    user.first_name = user_data[:first_name]
+    user.last_name = user_data[:last_name]
+    user.password = 'password'
+    user.password_confirmation = 'password'
+    user.confirmed_at = Time.current
+    user.strava_url = user_data[:strava_url] if user_data[:strava_url]
+    user.trailforks_url = user_data[:trailforks_url] if user_data[:trailforks_url]
+    user.outside_url = user_data[:outside_url] if user_data[:outside_url]
+    user.athlinks_url = user_data[:athlinks_url] if user_data[:athlinks_url]
+  end
 end
 
 # Get existing users or create new ones to reach 500 total
