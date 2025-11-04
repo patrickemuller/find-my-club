@@ -45,7 +45,11 @@ gem "image_processing"
 # Use friendly_id for slugged IDs[https://github.com/norman/friendly_id]
 gem "friendly_id"
 
+# Load .env files before loading the rails app
 gem "dotenv-rails"
+
+# Resend is an API to send emails using HTTPS instead of SMTP (blocked on Railway)
+gem "resend"
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem

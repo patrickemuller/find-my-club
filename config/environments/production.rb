@@ -60,6 +60,8 @@ Rails.application.configure do
   config.action_mailer.default_url_options = { host: "find-my.club" }
 
   # Specify outgoing SMTP server. Remember to add smtp/* credentials via rails credentials:edit.
+  config.action_mailer.perform_deliveries = true
+  config.action_mailer.delivery_method = :resend
   # config.action_mailer.smtp_settings = {
   #   user_name: Rails.application.credentials.dig(:smtp, :user_name),
   #   password: Rails.application.credentials.dig(:smtp, :password),
@@ -86,6 +88,4 @@ Rails.application.configure do
   #
   # Skip DNS rebinding protection for the default health check endpoint.
   # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
-  config.action_mailer.delivery_method = :smtp
-  config.action_mailer.perform_deliveries = true
 end
