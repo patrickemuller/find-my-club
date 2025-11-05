@@ -44,7 +44,7 @@ class User < ApplicationRecord
 
   # Social media URL validations
   validates :strava_url,
-            format: { with: %r{\Ahttps://www\.strava\.com/athletes/.+\z}, message: "must be a valid Strava profile URL (https://www.strava.com/athletes/...)" },
+            format: { with: %r{\Ahttps://www\.strava\.com/(athletes|pros)/.+\z}, message: "must be a valid Strava profile URL (https://www.strava.com/athletes/... or /pros/...)" },
             allow_blank: true
 
   validates :trailforks_url,
@@ -82,7 +82,7 @@ class User < ApplicationRecord
   # Extract username from social media URLs
   def strava_username
     return nil unless strava_url.present?
-    strava_url.match(%r{/athletes/(.+?)(?:/|$)})&.[](1)
+    strava_url.match(%r{/(athletes|pros)/(.+?)(?:/|$)})&.[](2)
   end
 
   def trailforks_username

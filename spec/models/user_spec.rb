@@ -232,6 +232,11 @@ RSpec.describe User, type: :model do
         expect(user.strava_username).to eq("12004453")
       end
 
+      it "handles URLs with trailing slash and PROS as url path" do
+        user.strava_url = "https://www.strava.com/pros/12004453/"
+        expect(user.strava_username).to eq("12004453")
+      end
+
       it "returns nil if URL is blank" do
         user.strava_url = nil
         expect(user.strava_username).to be_nil
