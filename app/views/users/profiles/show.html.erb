@@ -1,0 +1,207 @@
+<% content_for :title, "#{@user.first_name} #{@user.last_name}" %>
+
+<div class="w-full mx-auto">
+  <!-- Profile Header Section -->
+  <section class="relative overflow-hidden rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900 mb-6">
+    <div class="absolute inset-0">
+      <%= image_tag "https://picsum.photos/seed/#{@user.id}-profile-hero/1600/400", class: "h-full w-full object-cover blur-sm" %>
+      <div class="absolute inset-0 bg-white/70 dark:bg-gray-900/70"></div>
+    </div>
+
+    <div class="relative px-6 py-10 sm:py-14 lg:px-8">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center gap-6">
+        <!-- Profile Picture Placeholder -->
+        <div class="flex-shrink-0">
+          <%= image_tag "https://picsum.photos/seed/#{@user.id}-profile-picture/128/128",
+            alt: "#{@user.first_name} #{@user.last_name}",
+            class: "w-32 h-32 rounded-full object-cover shadow-xl border-4 border-white dark:border-gray-800" %>
+        </div>
+
+        <!-- User Info -->
+        <div class="flex-grow">
+          <h1 class="text-4xl font-extrabold tracking-tight sm:text-5xl">
+            <%= @user.first_name %> <%= @user.last_name %>
+          </h1>
+
+          <!-- Stats Row - Placeholders for future features -->
+          <div class="mt-4 flex flex-wrap gap-6 text-sm">
+            <div>
+              <span class="font-bold text-gray-900 dark:text-gray-100">0</span>
+              <span class="text-gray-600 dark:text-gray-400">Following</span>
+            </div>
+            <div>
+              <span class="font-bold text-gray-900 dark:text-gray-100">0</span>
+              <span class="text-gray-600 dark:text-gray-400">Followers</span>
+            </div>
+          </div>
+
+          <!-- Social Media Links -->
+          <% if @user.strava_url.present? || @user.trailforks_url.present? || @user.outside_url.present? || @user.athlinks_url.present? %>
+            <div class="mt-4 flex flex-wrap gap-2">
+              <% if @user.strava_url.present? %>
+                <%= link_to URI.parse(@user.strava_url).to_s, target: "_blank", rel: "noopener noreferrer", class: "inline-flex items-center gap-2 rounded-full border border-orange-500 bg-orange-50 px-3 py-1.5 text-sm font-medium text-orange-700 hover:bg-orange-100 dark:bg-orange-900/20 dark:text-orange-400 dark:hover:bg-orange-900/30" do %>
+                  <%= image_tag "strava-icon.svg", alt: "Strava", class: "w-4 h-4" %>
+                  <%= @user.strava_username %>
+                <% end %>
+              <% end %>
+
+              <% if @user.trailforks_url.present? %>
+                <%= link_to URI.parse(@user.trailforks_url).to_s, target: "_blank", rel: "noopener noreferrer", class: "inline-flex items-center gap-2 rounded-full border border-green-500 bg-green-50 px-3 py-1.5 text-sm font-medium text-green-700 hover:bg-green-100 dark:bg-green-900/20 dark:text-green-400 dark:hover:bg-green-900/30" do %>
+                  <%= image_tag "trailforks-icon.svg", alt: "Trailforks", class: "w-4 h-4" %>
+                  <%= @user.trailforks_username %>
+                <% end %>
+              <% end %>
+
+              <% if @user.outside_url.present? %>
+                <%= link_to URI.parse(@user.outside_url).to_s, target: "_blank", rel: "noopener noreferrer", class: "inline-flex items-center gap-2 rounded-full border border-amber-500 bg-amber-50 px-3 py-1.5 text-sm font-medium text-amber-700 hover:bg-amber-100 dark:bg-amber-900/20 dark:text-amber-400 dark:hover:bg-amber-900/30" do %>
+                  <%= image_tag "outside-icon.png", alt: "Outside", class: "w-4 h-4" %>
+                  <%= @user.outside_username %>
+                <% end %>
+              <% end %>
+
+              <% if @user.athlinks_url.present? %>
+                <%= link_to URI.parse(@user.athlinks_url).to_s, target: "_blank", rel: "noopener noreferrer", class: "inline-flex items-center gap-2 rounded-full border border-indigo-500 bg-indigo-50 px-3 py-1.5 text-sm font-medium text-indigo-700 hover:bg-indigo-100 dark:bg-indigo-900/20 dark:text-indigo-400 dark:hover:bg-indigo-900/30" do %>
+                  <%= image_tag "athlinks-icon.webp", alt: "Athlinks", class: "w-4 h-4" %>
+                  <%= @user.athlinks_username %>
+                <% end %>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Main Content Column -->
+    <div class="lg:col-span-2 space-y-6">
+      <!-- Recent Activities Section (Placeholder) -->
+      <section class="rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-900">
+        <h2 class="text-2xl font-bold tracking-tight mb-4">Recent Activities</h2>
+
+        <% if @recent_events.any? %>
+          <div class="space-y-4">
+            <% @recent_events.each do |event| %>
+              <div class="border-l-4 border-orange-500 pl-4 py-2">
+                <div class="flex items-start justify-between">
+                  <div>
+                    <h3 class="font-semibold text-gray-900 dark:text-gray-100">
+                      <%= event.name %>
+                    </h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">
+                      <%= event.club.name %>
+                    </p>
+                    <p class="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                      <%= event.starts_at.strftime("%B %d, %Y") %>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="text-center py-8">
+            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">No recent activities</h3>
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+              This user hasn't participated in any events yet.
+            </p>
+          </div>
+        <% end %>
+      </section>
+
+      <!-- Current Month Stats (Placeholder) -->
+      <section class="rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-900">
+        <h2 class="text-2xl font-bold tracking-tight mb-4">Current Month</h2>
+        <div class="grid grid-cols-2 gap-4">
+          <div class="text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+            <div class="text-3xl font-bold text-gray-900 dark:text-gray-100">-</div>
+            <div class="text-sm text-gray-600 dark:text-gray-400 mt-1">Events Attended</div>
+          </div>
+          <div class="text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+            <div class="text-3xl font-bold text-gray-900 dark:text-gray-100">-</div>
+            <div class="text-sm text-gray-600 dark:text-gray-400 mt-1">Total Hours</div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Sidebar Column -->
+    <div class="space-y-6">
+      <!-- Clubs Section -->
+      <section class="rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-900">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-xl font-bold tracking-tight">Clubs</h2>
+          <% if @all_user_clubs.any? && @all_user_clubs.count > 5 %>
+            <span data-carousel-target="pageIndicator" class="text-xs text-gray-500 dark:text-gray-400"></span>
+          <% end %>
+        </div>
+
+        <% if @all_user_clubs.any? %>
+          <div data-controller="carousel">
+            <!-- Carousel Pages -->
+            <% @all_user_clubs.each_slice(5).with_index do |clubs_page, page_index| %>
+              <div data-carousel-target="page" class="<%= 'hidden' unless page_index == 0 %>">
+                <div class="space-y-3">
+                  <% clubs_page.each do |club| %>
+                    <%= link_to club_path(club), class: "block p-3 rounded-lg border border-gray-200 hover:border-orange-500 hover:bg-orange-50 transition-colors dark:border-gray-700 dark:hover:border-orange-500 dark:hover:bg-orange-900/10" do %>
+                      <div class="font-semibold text-gray-900 dark:text-gray-100 text-sm">
+                        <%= club.name %>
+                      </div>
+                      <div class="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                        <%= club.formatted_category %>
+                      </div>
+                    <% end %>
+                  <% end %>
+                </div>
+              </div>
+            <% end %>
+
+            <!-- Navigation Controls -->
+            <% if @all_user_clubs.count > 5 %>
+              <div class="flex items-center justify-between mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                <button data-carousel-target="prevButton" data-action="click->carousel#previous" class="inline-flex items-center gap-1 px-3 py-1.5 text-sm text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                  </svg>
+                  Previous
+                </button>
+
+                <button data-carousel-target="nextButton" data-action="click->carousel#next" class="inline-flex items-center gap-1 px-3 py-1.5 text-sm text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors">
+                  Next
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                  </svg>
+                </button>
+              </div>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="text-center py-6">
+            <svg class="mx-auto h-10 w-10 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+            <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+              Not a member of any public clubs
+            </p>
+          </div>
+        <% end %>
+      </section>
+
+      <!-- Trophy Case (Placeholder) -->
+      <section class="rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-900">
+        <h2 class="text-xl font-bold tracking-tight mb-4">Achievements</h2>
+        <div class="text-center py-6">
+          <svg class="mx-auto h-10 w-10 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+          </svg>
+          <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+            No achievements yet
+          </p>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>

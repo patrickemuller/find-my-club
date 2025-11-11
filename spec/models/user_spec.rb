@@ -4,6 +4,7 @@
 #
 #  id                     :bigint           not null, primary key
 #  admin                  :boolean          default(FALSE)
+#  athlinks_url           :string
 #  confirmation_sent_at   :datetime
 #  confirmation_token     :string
 #  confirmed_at           :datetime
@@ -15,10 +16,13 @@
 #  last_name              :string           not null
 #  last_sign_in_at        :datetime
 #  last_sign_in_ip        :string
+#  outside_url            :string
 #  remember_created_at    :datetime
 #  reset_password_sent_at :datetime
 #  reset_password_token   :string
 #  sign_in_count          :integer          default(0), not null
+#  strava_url             :string
+#  trailforks_url         :string
 #  unconfirmed_email      :string
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
@@ -211,6 +215,83 @@ RSpec.describe User, type: :model do
     it "has trackable module" do
       expect(user).to respond_to(:current_sign_in_at)
       expect(user).to respond_to(:sign_in_count)
+    end
+  end
+
+  describe "social media username extraction" do
+    let(:user) { build(:user) }
+
+    describe "#strava_username" do
+      it "extracts username from Strava URL" do
+        user.strava_url = "https://www.strava.com/athletes/12004453"
+        expect(user.strava_username).to eq("12004453")
+      end
+
+      it "handles URLs with trailing slash" do
+        user.strava_url = "https://www.strava.com/athletes/12004453/"
+        expect(user.strava_username).to eq("12004453")
+      end
+
+      it "handles URLs with trailing slash and PROS as url path" do
+        user.strava_url = "https://www.strava.com/pros/12004453/"
+        expect(user.strava_username).to eq("12004453")
+      end
+
+      it "returns nil if URL is blank" do
+        user.strava_url = nil
+        expect(user.strava_username).to be_nil
+      end
+    end
+
+    describe "#trailforks_username" do
+      it "extracts username from Trailforks URL" do
+        user.trailforks_url = "https://www.trailforks.com/profile/patrickemuller/"
+        expect(user.trailforks_username).to eq("patrickemuller")
+      end
+
+      it "handles URLs without trailing slash" do
+        user.trailforks_url = "https://www.trailforks.com/profile/johndoe"
+        expect(user.trailforks_username).to eq("johndoe")
+      end
+
+      it "returns nil if URL is blank" do
+        user.trailforks_url = nil
+        expect(user.trailforks_username).to be_nil
+      end
+    end
+
+    describe "#outside_username" do
+      it "extracts username from Outside URL" do
+        user.outside_url = "https://www.outsideinc.com/developer"
+        expect(user.outside_username).to eq("developer")
+      end
+
+      it "extracts last path segment" do
+        user.outside_url = "https://www.outsideinc.com/users/johndoe"
+        expect(user.outside_username).to eq("johndoe")
+      end
+
+      it "returns nil if URL is blank" do
+        user.outside_url = nil
+        expect(user.outside_username).to be_nil
+      end
+    end
+
+    describe "#athlinks_username" do
+      it "extracts username from Athlinks URL" do
+        user.athlinks_url = "https://www.athlinks.com/athletes/12345"
+        expect(user.athlinks_username).to eq("12345")
+      end
+
+      it "handles URLs with trailing slash" do
+        user.athlinks_url = "https://www.athlinks.com/athletes/67890/"
+        expect(user.athlinks_username).to eq("67890")
+      end
+
+      it "returns nil if URL is blank" do
+        user.athlinks_url = nil
+        expect(user.athlinks_username).to be_nil
+      end
     end
   end
 end

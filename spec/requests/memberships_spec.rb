@@ -15,7 +15,7 @@ RSpec.describe "Memberships", type: :request do
     end
 
     context "when joining a public club" do
-      before { sign_in user }
+      before { login_as user }
 
       it "creates membership with active status" do
         expect {
@@ -37,7 +37,7 @@ RSpec.describe "Memberships", type: :request do
     end
 
     context "when joining a private club" do
-      before { sign_in user }
+      before { login_as user }
 
       it "creates membership with pending status" do
         expect {
@@ -59,7 +59,7 @@ RSpec.describe "Memberships", type: :request do
     end
 
     context "when owner tries to join own club" do
-      before { sign_in owner }
+      before { login_as owner }
 
       it "does not create membership" do
         expect {
@@ -76,7 +76,7 @@ RSpec.describe "Memberships", type: :request do
 
     context "when user tries to join same club twice" do
       before do
-        sign_in user
+        login_as user
         create(:membership, user: user, club: public_club)
       end
 
@@ -104,7 +104,7 @@ RSpec.describe "Memberships", type: :request do
 
     context "when user leaves club" do
       before do
-        sign_in user
+        login_as user
         create(:membership, user: user, club: public_club)
       end
 
@@ -122,7 +122,7 @@ RSpec.describe "Memberships", type: :request do
     end
 
     context "when user is not a member" do
-      before { sign_in user }
+      before { login_as user }
 
       it "does not change membership count" do
         expect {
@@ -141,7 +141,7 @@ RSpec.describe "Memberships", type: :request do
       let(:member) { create(:user) }
       let!(:membership) { create(:membership, user: member, club: public_club) }
 
-      before { sign_in owner }
+      before { login_as owner }
 
       it "removes the member" do
         expect {
@@ -168,7 +168,7 @@ RSpec.describe "Memberships", type: :request do
     end
 
     context "when authenticated as non-owner" do
-      before { sign_in user }
+      before { login_as user }
 
       it "redirects with authorization error" do
         patch approve_club_membership_path(public_club, membership)
@@ -178,7 +178,7 @@ RSpec.describe "Memberships", type: :request do
     end
 
     context "when authenticated as owner" do
-      before { sign_in owner }
+      before { login_as owner }
 
       it "approves the member" do
         expect {
@@ -212,7 +212,7 @@ RSpec.describe "Memberships", type: :request do
     end
 
     context "when authenticated as non-owner" do
-      before { sign_in user }
+      before { login_as user }
 
       it "redirects with authorization error" do
         patch enable_club_membership_path(public_club, membership)
@@ -222,7 +222,7 @@ RSpec.describe "Memberships", type: :request do
     end
 
     context "when authenticated as owner" do
-      before { sign_in owner }
+      before { login_as owner }
 
       it "enables the member" do
         expect {
@@ -250,7 +250,7 @@ RSpec.describe "Memberships", type: :request do
     end
 
     context "when authenticated as non-owner" do
-      before { sign_in user }
+      before { login_as user }
 
       it "redirects with authorization error" do
         patch disable_club_membership_path(public_club, membership)
@@ -260,7 +260,7 @@ RSpec.describe "Memberships", type: :request do
     end
 
     context "when authenticated as owner" do
-      before { sign_in owner }
+      before { login_as owner }
 
       it "disables the member" do
         expect {

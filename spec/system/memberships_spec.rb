@@ -9,7 +9,7 @@ RSpec.describe "Memberships", type: :system do
   # Public club membership flow
   describe "Public club membership" do
     it "allows user to join a public club" do
-      sign_in user
+      login_as user
       visit club_path(public_club)
 
       expect(page).to have_button("Join")
@@ -24,7 +24,7 @@ RSpec.describe "Memberships", type: :system do
     end
 
     it "changes join button to leave button after joining" do
-      sign_in user
+      login_as user
       visit club_path(public_club)
 
       expect(page).to have_button("Join")
@@ -37,7 +37,7 @@ RSpec.describe "Memberships", type: :system do
     end
 
     it "allows user to leave a club" do
-      sign_in user
+      login_as user
       create(:membership, user: user, club: public_club)
 
       visit club_path(public_club)
@@ -56,7 +56,7 @@ RSpec.describe "Memberships", type: :system do
     end
 
     it "updates member count correctly" do
-      sign_in user
+      login_as user
       visit club_path(public_club)
 
       # Initially 0 members
@@ -70,7 +70,7 @@ RSpec.describe "Memberships", type: :system do
     end
 
     it "does not count pending members in member count" do
-      sign_in user
+      login_as user
       visit club_path(private_club)
 
       # Initially 0 members
@@ -87,7 +87,7 @@ RSpec.describe "Memberships", type: :system do
   # Private club membership flow
   describe "Private club membership" do
     it "allows user to request to join a private club" do
-      sign_in user
+      login_as user
       visit club_path(private_club)
 
       expect(page).to have_button("Join")
@@ -102,7 +102,7 @@ RSpec.describe "Memberships", type: :system do
     end
 
     it "shows 'Pending Approval' message for pending members" do
-      sign_in user
+      login_as user
       create(:membership, :pending, user: user, club: private_club)
 
       visit club_path(private_club)
@@ -113,7 +113,7 @@ RSpec.describe "Memberships", type: :system do
     end
 
     it "shows 'Membership Disabled' message for disabled members" do
-      sign_in user
+      login_as user
       create(:membership, :disabled, user: user, club: public_club)
 
       visit club_path(public_club)
@@ -127,7 +127,7 @@ RSpec.describe "Memberships", type: :system do
   # Authorization tests
   describe "Authorization" do
     it "does not allow owner to join their own club" do
-      sign_in owner
+      login_as owner
       visit club_path(public_club)
 
       expect(page).to have_link("Update my Club")
@@ -135,7 +135,7 @@ RSpec.describe "Memberships", type: :system do
     end
 
     it "prevents user from joining same club twice" do
-      sign_in user
+      login_as user
       create(:membership, user: user, club: public_club)
 
       visit club_path(public_club)
@@ -155,7 +155,7 @@ RSpec.describe "Memberships", type: :system do
   # Owner member management
   describe "Owner member management" do
     it "allows owner to approve pending memberships" do
-      sign_in owner
+      login_as owner
       member = create(:user, first_name: "Jane")
       membership = create(:membership, :pending, user: member, club: private_club)
 
@@ -177,7 +177,7 @@ RSpec.describe "Memberships", type: :system do
     end
 
     it "allows owner to disable active members" do
-      sign_in owner
+      login_as owner
       member = create(:user, first_name: "John")
       membership = create(:membership, user: member, club: public_club)
 
@@ -199,7 +199,7 @@ RSpec.describe "Memberships", type: :system do
     end
 
     it "allows owner to enable disabled members" do
-      sign_in owner
+      login_as owner
       member = create(:user, first_name: "Bob")
       membership = create(:membership, :disabled, user: member, club: public_club)
 
@@ -221,7 +221,7 @@ RSpec.describe "Memberships", type: :system do
     end
 
     it "allows owner to remove members" do
-      sign_in owner
+      login_as owner
       member = create(:user, first_name: "Sarah")
       membership = create(:membership, user: member, club: public_club)
 
@@ -242,7 +242,7 @@ RSpec.describe "Memberships", type: :system do
     end
 
     it "allows owner to view all members categorized by status" do
-      sign_in owner
+      login_as owner
       active_member = create(:user, first_name: "Alice")
       pending_member = create(:user, first_name: "Charlie")
       disabled_member = create(:user, first_name: "Dave")
@@ -281,7 +281,7 @@ RSpec.describe "Memberships", type: :system do
   # My Clubs page tests
   describe "My Clubs page" do
     it "shows clubs user owns and clubs user is member of" do
-      sign_in user
+      login_as user
       owned_club = create(:club, owner: user, name: "My Owned Club")
       member_club = create(:club, name: "Member Club")
       create(:membership, user: user, club: member_club)
@@ -300,7 +300,7 @@ RSpec.describe "Memberships", type: :system do
     end
 
     it "allows user to leave club from my clubs page" do
-      sign_in user
+      login_as user
       member_club = create(:club, name: "Test Club")
       create(:membership, user: user, club: member_club)
 
