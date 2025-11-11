@@ -4,7 +4,7 @@
   <!-- Profile Header Section -->
   <section class="relative overflow-hidden rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900 mb-6">
     <div class="absolute inset-0">
-      <img alt="" src="https://picsum.photos/seed/<%= @user.id %>-profile-hero/1600/400" class="h-full w-full object-cover blur-sm" />
+      <%= image_tag "https://picsum.photos/seed/#{@user.id}-profile-hero/1600/400", class: "h-full w-full object-cover blur-sm" %>
       <div class="absolute inset-0 bg-white/70 dark:bg-gray-900/70"></div>
     </div>
 
@@ -12,7 +12,7 @@
       <div class="flex flex-col sm:flex-row items-start sm:items-center gap-6">
         <!-- Profile Picture Placeholder -->
         <div class="flex-shrink-0">
-          <%= image_tag "https://media.licdn.com/dms/image/v2/D5635AQHukUdI3SOfYw/profile-framedphoto-shrink_400_400/B56ZoDA6F0G4Ac-/0/1760987161183?e=1762844400&v=beta&t=eAkotyzTHRPeMtW7KH4x3qCHMsAGjd6tlbiOzCJ0QBE",
+          <%= image_tag "https://picsum.photos/seed/#{@user.id}-profile-picture/128/128",
             alt: "#{@user.first_name} #{@user.last_name}",
             class: "w-32 h-32 rounded-full object-cover shadow-xl border-4 border-white dark:border-gray-800" %>
         </div>
