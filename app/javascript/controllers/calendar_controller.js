@@ -41,7 +41,7 @@ export default class extends Controller {
   renderCalendar() {
     // Update month display
     const monthNames = ["January", "February", "March", "April", "May", "June",
-                        "July", "August", "September", "October", "November", "December"]
+      "July", "August", "September", "October", "November", "December"]
     this.monthDisplayTarget.textContent = `${monthNames[this.currentMonth]} ${this.currentYear}`
     this.monthDisplayTarget.setAttribute("datetime", `${this.currentYear}-${String(this.currentMonth + 1).padStart(2, '0')}`)
 
@@ -109,12 +109,11 @@ export default class extends Controller {
         const time = this.formatTime(event.starts_at)
         eventsHtml += `
           <li>
-            <a href="${event.url}" target="_blank" class="group inset-1 flex rounded-lg bg-orange-50 p-2 text-xs/5 hover:bg-orange-100 dark:bg-orange-600/15 dark:hover:bg-orange-600/20">
-              <p class="flex-auto truncate font-medium text-gray-900 group-hover:text-orange-600 dark:text-white dark:group-hover:text-orange-400">
+            <a href="${event.url}" target="_blank" class="mt-1 group inset-1 flex rounded-lg bg-orange-200 p-2 text-xs/5 hover:bg-orange-300 dark:bg-orange-600/15 dark:hover:bg-orange-600/20">
+              <p class="flex-auto truncate font-medium text-gray-900 dark:text-white">
                 ${this.escapeHtml(event.name)}
               </p>
-              <time datetime="${event.starts_at}"
-                    class="ml-3 hidden flex-none text-gray-500 group-hover:text-orange-600 xl:block dark:text-gray-400 dark:group-hover:text-orange-400">
+              <time datetime="${event.starts_at}" class="ml-3 hidden flex-none text-gray-500 xl:block dark:text-gray-400">
                 ${time}
               </time>
             </a>
@@ -190,8 +189,8 @@ export default class extends Controller {
   isToday(date) {
     const today = new Date()
     return date.getDate() === today.getDate() &&
-           date.getMonth() === today.getMonth() &&
-           date.getFullYear() === today.getFullYear()
+      date.getMonth() === today.getMonth() &&
+      date.getFullYear() === today.getFullYear()
   }
 
   escapeHtml(text) {
