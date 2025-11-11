@@ -1,8 +1,16 @@
 <% content_for :title, "#{@event.name}" %>
 
-<div class="mx-auto w-full md:mt-8" data-controller="participants-modal">
+<div class="w-full md:mt-8" data-controller="participants-modal">
+  <div class="w-full">
+    <%= render partial: 'shared/breadcrumbs', locals: {
+      links_and_text: [
+        [clubs_path, "Clubs"], [club_path(@club), truncate(@club.name, length: 20)], [club_events_path(@club), "All events"], [club_event_path(@event), truncate(@event.name, length: 20)]
+      ]
+    } %>
+  </div>
+
   <!-- Header -->
-  <div class="mb-6">
+  <div class="mb-4 mt-4">
     <h1 class="text-3xl font-bold tracking-tight"><%= @event.name %></h1>
     <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">
       Organized by <span class="font-bold"><%= @club.owner.first_name + " " + @club.owner.last_name %></span>
@@ -43,8 +51,8 @@
         <!-- Link to open in Google Maps -->
         <%= link_to @event.location, target: "_blank", rel: "noopener", class: "inline-flex items-center text-orange-600 hover:underline text-sm" do %>
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
           </svg>
           Open in Google Maps
         <% end %>
@@ -74,7 +82,7 @@
         <p class="text-sm text-gray-600 dark:text-gray-300 mb-4">
           <a href="#" class="hover:text-orange-600 dark:hover:text-orange-400 cursor-pointer" data-action="click->participants-modal#open">
             <%= @event.confirmed_participants_count %> / <%= @event.max_participants %> participants
-            <%= "(#{@event.waitlist_participants_count} in waitlist)" if @event.has_waitlist?%>
+            <%= "(#{@event.waitlist_participants_count} in waitlist)" if @event.has_waitlist? %>
           </a>
         </p>
 
@@ -96,10 +104,10 @@
         <% elsif @event.full? && !@event.has_waitlist? %>
           <!-- Event full, no waitlist -->
           <p class="text-sm text-red-600 dark:text-red-400">This event is full and does not have a waitlist.</p>
-        <!-- User can enter the waitlist -->
-        <% elsif @event.in_progress? && @event.full? && @event.has_waitlist?%>
+          <!-- User can enter the waitlist -->
+        <% elsif @event.in_progress? && @event.full? && @event.has_waitlist? %>
           <%= button_to "Join the Waitlist", club_event_event_registrations_path(@club, @event), method: :post, class: "block w-full rounded-md bg-amber-400 px-4 py-2 text-sm font-medium text-white hover:bg-amber-500" %>
-        <!-- User can register -->
+          <!-- User can register -->
         <% elsif @event.in_progress? %>
           <%= button_to "Register for Event", club_event_event_registrations_path(@club, @event), method: :post, class: "block w-full rounded-md bg-orange-600 px-4 py-2 text-sm font-medium text-white hover:bg-orange-700" %>
         <% else %>
@@ -129,7 +137,7 @@
             <h3 class="text-2xl font-semibold text-gray-900 dark:text-gray-100">Event Participants</h3>
             <button type="button" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300" data-action="click->participants-modal#close">
               <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
               </svg>
             </button>
           </div>

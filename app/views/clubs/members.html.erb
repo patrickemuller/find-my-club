@@ -1,14 +1,21 @@
 <% content_for :title, "#{@club.name} - Members" %>
 
-<div class="mx-auto w-full md:mt-8">
+<div class="w-full md:mt-8">
   <!-- Page header -->
-  <div class="flex grid grid-cols-4 items-center mb-6">
-    <div class="col-span-4 lg:col-span-3 mb-4">
-      <h1 class="text-3xl font-bold tracking-tight">Manage Members</h1>
-      <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">Manage members of <%= @club.name %></p>
+  <div class="w-full">
+    <div class="w-full">
+      <%= render partial: 'shared/breadcrumbs', locals: {
+        links_and_text: [
+          [clubs_path, "Clubs"], [club_path(@club), truncate(@club.name, length: 20)], [club_membership_path(@club), "All members"]
+        ]
+      } %>
     </div>
 
-    <div class="flex col-span-4 lg:col-span-1 lg:justify-end">
+    <div class="w-full flex mt-4 justify-between items-center">
+      <div class="col-span-4 lg:col-span-3 mb-4">
+        <h1 class="text-3xl font-bold tracking-tight">Manage Members</h1>
+      </div>
+
       <%= link_to my_clubs_path, class: "inline-flex items-center rounded-md bg-orange-600 px-4 py-2 text-sm font-medium text-white shadow hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2" do %>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="mr-2 h-5 w-5">
           <path fill-rule="evenodd" d="M7.72 12.53a.75.75 0 010-1.06l7.5-7.5a.75.75 0 111.06 1.06L9.31 12l6.97 6.97a.75.75 0 11-1.06 1.06l-7.5-7.5z" clip-rule="evenodd" />
@@ -18,10 +25,10 @@
     </div>
   </div>
 
+  <!-- Tabs -->
   <div data-controller="tabs" data-tabs-default-tab-value="active">
-    <!-- Tabs -->
     <div class="border-b border-gray-200 dark:border-gray-700">
-      <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+      <nav class="-mb-px flex space-x-8 overflow-scroll" aria-label="Tabs">
         <a href="#active" data-tab-name="active" data-tabs-target="tab" data-action="click->tabs#select" class="border-orange-500 text-orange-600 dark:text-orange-400 whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium cursor-pointer">
           Active
           <span class="ml-2 rounded-full bg-gray-100 dark:bg-gray-700 px-2.5 py-0.5 text-xs font-medium text-gray-900 dark:text-gray-100"><%= @active_members.count %></span>

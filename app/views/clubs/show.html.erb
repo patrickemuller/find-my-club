@@ -1,8 +1,14 @@
 <% content_for :title, @club.name %>
 
-<div class="w-full">
+<div class="w-full md:mt-8">
   <!-- Hero banner with blurred background and overlay -->
-  <section class="relative overflow-hidden rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900">
+  <div class="w-full">
+    <%= render partial: 'shared/breadcrumbs', locals: {
+      links_and_text: [[clubs_path, "Clubs"], [club_path(@club), @club.name]]
+    } %>
+  </div>
+
+  <section class="relative mt-4 overflow-hidden rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900">
     <div class="absolute inset-0">
       <img alt="" src="https://picsum.photos/seed/<%= @club.slug %>-hero/1600/500" class="h-full w-full object-cover blur-sm" />
       <div class="absolute inset-0 bg-white/70 dark:bg-gray-900/70"></div>
