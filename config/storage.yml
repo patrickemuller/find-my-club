@@ -14,6 +14,16 @@ local:
 #   region: us-east-1
 #   bucket: your_own_bucket-<%= Rails.env %>
 
+cloudflare_r2:
+  service: S3 # This is correct, R2 is a S3-compatible service
+  endpoint: <%= ENV.fetch("R2_ENDPOINT", nil) %>
+  access_key_id: <%= ENV.fetch("R2_ACCESS_KEY", nil) %>
+  secret_access_key: <%= ENV.fetch("R2_SECRET_KEY", nil) %>
+  bucket: <%= ENV.fetch("R2_BUCKET_NAME", "find-my-club-production") %>
+  region: auto
+  request_checksum_calculation: "when_required" # this is required to prevent issues with R2 storage
+  response_checksum_validation: "when_required" # this is required to prevent issues with R2 storage
+
 # Remember not to checkin your GCS keyfile to a repository
 # google:
 #   service: GCS
