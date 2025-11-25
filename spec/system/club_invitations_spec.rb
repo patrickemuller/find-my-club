@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe "Club Invitations", type: :system do
+RSpec.describe "Club Invitations", type: :system, js: true do
   include ActiveJob::TestHelper
 
   let(:owner) { create(:user, email: "owner@example.com") }
@@ -372,7 +372,7 @@ RSpec.describe "Club Invitations", type: :system do
       expect(ClubInvitation.where(club: club).count).to eq(3)
 
       # Create users and accept invitations
-      [ "user1@example.com", "user2@example.com", "user3@example.com" ].each do |email|
+      %w[user1@example.com user2@example.com user3@example.com].each do |email|
         invitation = ClubInvitation.find_by(email: email)
         expect(invitation).to be_present, "Expected invitation for #{email} to exist"
 
@@ -409,9 +409,6 @@ RSpec.describe "Club Invitations", type: :system do
     end
 
     it "prevents duplicate invitations with different case emails" do
-      # Skip due to unhandled database constraint - same issue as the other duplicate test
-      skip "Database constraint violation not gracefully handled - needs fix in controller or model"
-
       login_as owner
 
       # Create invitation with lowercase email
@@ -431,70 +428,3 @@ RSpec.describe "Club Invitations", type: :system do
     end
   end
 end
-
-# Additional test scenarios and edge cases to consider:
-#
-# 1. Rate limiting and abuse prevention:
-#    - Test maximum number of invitations per day/hour
-#    - Test cooldown period between invitation batches
-#    - Test invitation quota per club
-#
-# 2. Email validation edge cases:
-#    - Test with international characters in email addresses
-#    - Test with very long email addresses (near max length)
-#    - Test with edge case valid emails (e.g., user+tag@example.com)
-#
-# 3. Concurrent invitation scenarios:
-#    - Test race condition when two owners invite same email simultaneously
-#    - Test what happens if user joins club between invitation send and acceptance
-#
-# 4. Invitation lifecycle:
-#    - Test automatic cleanup of expired invitations
-#    - Test resending invitations to same email after rejection
-#    - Test resending invitations after expiration
-#    - Test invitation history/audit trail
-#
-# 5. Permission and authorization edge cases:
-#    - Test if admin users can invite on behalf of owners
-#    - Test invitation behavior when club ownership changes
-#    - Test invitation behavior when club is deleted
-#    - Test invitation behavior when inviting user (owner) is deleted
-#
-# 6. Multi-club scenarios:
-#    - Test user with pending invitation to multiple clubs
-#    - Test accepting invitation when already member of other clubs
-#    - Test invitation count/limit across all user's clubs
-#
-# 7. Email delivery edge cases:
-#    - Test behavior when email delivery fails
-#    - Test retry mechanism for failed email deliveries
-#    - Test email unsubscribe/bounce handling
-#
-# 8. User experience scenarios:
-#    - Test invitation preview before sending
-#    - Test custom invitation message from owner
-#    - Test bulk invitation progress indicator
-#    - Test invitation analytics (sent, accepted, rejected rates)
-#
-# 9. Security scenarios:
-#    - Test invitation token entropy and uniqueness
-#    - Test protection against token brute force attacks
-#    - Test invitation token rotation after certain events
-#    - Test XSS protection in invitation emails
-#    - Test CSRF protection on invitation actions
-#
-# 10. Integration scenarios:
-#     - Test webhook notifications when invitation is accepted
-#     - Test integration with external auth providers (OAuth)
-#     - Test invitation through API endpoints
-#     - Test calendar invites for club events sent with membership invitation
-#
-# 11. Mobile and accessibility:
-#     - Test invitation links work correctly on mobile devices
-#     - Test email rendering on various email clients
-#     - Test screen reader compatibility for invitation flow
-#
-# 12. Performance scenarios:
-#     - Test sending 100+ invitations at once
-#     - Test database query performance with thousands of pending invitations
-#     - Test email queue performance under high load
