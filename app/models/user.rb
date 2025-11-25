@@ -68,6 +68,10 @@ class User < ApplicationRecord
   has_many :memberships, dependent: :destroy
   has_many :clubs_as_member, through: :memberships, source: :club
 
+  # Invitations
+  has_many :received_invitations, class_name: "ClubInvitation", foreign_key: :user_id
+  has_many :pending_club_invitations, -> { pending }, class_name: "ClubInvitation", primary_key: :email, foreign_key: :email
+
   # Helper methods
   def member_of?(club)
     memberships.active.exists?(club_id: club.id)

@@ -31,6 +31,9 @@ Rails.application.routes.draw do
       end
     end
 
+    # Invitations (owner only)
+    resources :club_invitations, only: [ :create ], path: "invitations"
+
     # Events
     resources :events do
       member do
@@ -53,6 +56,10 @@ Rails.application.routes.draw do
   end
 
   get "my-clubs", to: "clubs#my_clubs"
+
+  # Invitation acceptance routes (no auth required)
+  get "/invitations/:token/accept", to: "club_invitations#accept", as: :accept_club_invitation
+  post "/invitations/:token/reject", to: "club_invitations#reject", as: :reject_club_invitation
 
   # User profiles
   resources :users, only: [ :show ], controller: "users/profiles"

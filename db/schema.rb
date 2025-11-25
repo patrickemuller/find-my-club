@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_04_044558) do
+ActiveRecord::Schema[8.1].define(version: 2025_11_25_200409) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -50,6 +50,25 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_04_044558) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "club_invitations", force: :cascade do |t|
+    t.bigint "club_id", null: false
+    t.datetime "created_at", null: false
+    t.string "email", null: false
+    t.datetime "expires_at", null: false
+    t.bigint "invited_by_id", null: false
+    t.string "status", default: "pending", null: false
+    t.string "token", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id"
+    t.index ["club_id", "email"], name: "index_club_invitations_on_club_id_and_email", unique: true, where: "((status)::text = 'pending'::text)"
+    t.index ["club_id"], name: "index_club_invitations_on_club_id"
+    t.index ["email"], name: "index_club_invitations_on_email"
+    t.index ["invited_by_id"], name: "index_club_invitations_on_invited_by_id"
+    t.index ["status"], name: "index_club_invitations_on_status"
+    t.index ["token"], name: "index_club_invitations_on_token", unique: true
+    t.index ["user_id"], name: "index_club_invitations_on_user_id"
   end
 
   create_table "clubs", force: :cascade do |t|
@@ -270,6 +289,9 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_04_044558) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "club_invitations", "clubs"
+  add_foreign_key "club_invitations", "users"
+  add_foreign_key "club_invitations", "users", column: "invited_by_id"
   add_foreign_key "clubs", "users", column: "owner_id"
   add_foreign_key "event_registrations", "events"
   add_foreign_key "event_registrations", "users"
