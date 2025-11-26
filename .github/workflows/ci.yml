@@ -90,12 +90,12 @@ jobs:
           RAILS_ENV: test
           DATABASE_URL: postgres://postgres:postgres@localhost:5432
           # REDIS_URL: redis://localhost:6379/0
-        run: bin/rails db:test:prepare && bin/rspec
+        run: SECRET_KEY_BASE_DUMMY=1 bin/rails assets:precompile && bin/rails db:test:prepare && bin/rspec
 
       - name: Keep screenshots from failed system tests
         uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: screenshots
-          path: ${{ github.workspace }}/tmp/screenshots
+          path: tmp/capybara/*.png
           if-no-files-found: ignore

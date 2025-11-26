@@ -14,7 +14,7 @@ RSpec.describe MembershipMailer, type: :mailer do
     end
 
     it "sends from the correct email" do
-      expect(mail.from).to eq([ "from@example.com" ])
+      expect(mail.from).to eq([ "no-reply@find-my.club" ])
     end
 
     it "includes greeting in body" do

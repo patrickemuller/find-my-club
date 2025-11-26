@@ -17,6 +17,45 @@
     </div>
   </div>
 
+  <!-- Pending Invitations -->
+  <% if @pending_invitations.present? %>
+    <section class="mb-8">
+      <h2 class="text-xl font-semibold mb-4 text-orange-600 dark:text-orange-400">Pending Invitations</h2>
+      <div class="space-y-3">
+        <% @pending_invitations.each do |invitation| %>
+          <div class="w-full rounded-2xl border border-orange-200 bg-orange-50 p-5 shadow-sm dark:border-orange-800 dark:bg-orange-900/20">
+            <div class="flex items-start justify-between gap-4">
+              <div class="flex-1">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100"><%= invitation.club.name %></h3>
+                <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">
+                  <%= invitation.club.formatted_category %> · <%= invitation.club.formatted_level %>
+                </p>
+                <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">
+                  Invited by <%= invitation.invited_by.first_name %> <%= invitation.invited_by.last_name %>
+                </p>
+                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                  Expires <%= time_ago_in_words(invitation.expires_at) %> from now
+                </p>
+              </div>
+              <span class="inline-flex items-center rounded-full bg-orange-100 px-2 py-1 text-xs font-medium text-orange-600 dark:bg-orange-900/50 dark:text-orange-300">
+                Invited
+              </span>
+            </div>
+
+            <div class="mt-4 flex items-center gap-2">
+              <%= link_to "Accept", accept_club_invitation_path(token: invitation.token),
+                  class: "inline-flex items-center rounded-md bg-green-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-green-700" %>
+              <%= button_to "Reject", reject_club_invitation_path(token: invitation.token),
+                  method: :post,
+                  data: { turbo_confirm: "Are you sure you want to reject this invitation?" },
+                  class: "inline-flex items-center rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700" %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
+
   <!-- Clubs I own -->
   <section class="mb-8">
     <h2 class="text-xl font-semibold mb-4">Clubs I Own</h2>

@@ -83,6 +83,7 @@ class ClubsController < ApplicationController
   def my_clubs
     @clubs = current_user.clubs
     @memberships = current_user.clubs_as_member.where(memberships: { status: "active" }).includes(:owner)
+    @pending_invitations = ClubInvitation.pending.for_email(current_user.email).includes(:club, :invited_by)
   end
 
   def members
@@ -90,6 +91,7 @@ class ClubsController < ApplicationController
     @active_members = @club.memberships.active.includes(:user)
     @pending_members = @club.memberships.pending.includes(:user)
     @disabled_members = @club.memberships.disabled.includes(:user)
+    @pending_invitations = @club.club_invitations.pending.includes(:invited_by)
   end
 
   def enable

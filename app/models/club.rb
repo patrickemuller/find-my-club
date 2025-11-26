@@ -55,6 +55,9 @@ class Club < ApplicationRecord
   has_many :memberships, dependent: :destroy
   has_many :members, through: :memberships, source: :user
 
+  # Invitations
+  has_many :club_invitations, dependent: :destroy
+
   # Events
   has_many :events, dependent: :destroy
 

@@ -1,0 +1,20 @@
+<h1>You've been invited to join <%= @club.name %>!</h1>
+
+<p>Hi there,</p>
+
+<p><%= @invited_by.first_name %> <%= @invited_by.last_name %> has invited you to join <strong><%= @club.name %></strong> on Find My Club.</p>
+
+<p>
+  <strong>Club Details:</strong><br>
+  Category: <%= @club.formatted_category %><br>
+  Level: <%= @club.formatted_level %>
+</p>
+
+<p><%= link_to "Accept Invitation", @accept_url, style: "display: inline-block; padding: 10px 20px; background-color: #ea580c; color: white; text-decoration: none; border-radius: 6px;" %></p>
+
+<p>This invitation will expire in 48 hours.</p>
+
+<p>
+  Thanks,<br>
+  The Find My Club Team
+</p>

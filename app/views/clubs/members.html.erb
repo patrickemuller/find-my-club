@@ -16,12 +16,28 @@
         <h1 class="text-3xl font-bold tracking-tight">Manage Members</h1>
       </div>
 
-      <%= link_to my_clubs_path, class: "inline-flex items-center rounded-md bg-orange-600 px-4 py-2 text-sm font-medium text-white shadow hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2" do %>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="mr-2 h-5 w-5">
-          <path fill-rule="evenodd" d="M7.72 12.53a.75.75 0 010-1.06l7.5-7.5a.75.75 0 111.06 1.06L9.31 12l6.97 6.97a.75.75 0 11-1.06 1.06l-7.5-7.5z" clip-rule="evenodd" />
-        </svg>
-        Back to my Clubs
-      <% end %>
+      <div class="flex gap-3">
+        <div data-controller="invitation-modal">
+          <button
+            data-action="click->invitation-modal#open"
+            class="inline-flex items-center rounded-md bg-green-600 px-4 py-2 text-sm font-medium text-white shadow hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="mr-2 h-5 w-5">
+              <path d="M1.5 8.67v8.58a3 3 0 003 3h15a3 3 0 003-3V8.67l-8.928 5.493a3 3 0 01-3.144 0L1.5 8.67z" />
+              <path d="M22.5 6.908V6.75a3 3 0 00-3-3h-15a3 3 0 00-3 3v.158l9.714 5.978a1.5 1.5 0 001.572 0L22.5 6.908z" />
+            </svg>
+            Invite Members
+          </button>
+
+          <%= render "invitation_modal", club: @club %>
+        </div>
+
+        <%#= link_to my_clubs_path, class: "inline-flex items-center rounded-md bg-orange-600 px-4 py-2 text-sm font-medium text-white shadow hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2" do %>
+<!--          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="mr-2 h-5 w-5">-->
+<!--            <path fill-rule="evenodd" d="M7.72 12.53a.75.75 0 010-1.06l7.5-7.5a.75.75 0 111.06 1.06L9.31 12l6.97 6.97a.75.75 0 11-1.06 1.06l-7.5-7.5z" clip-rule="evenodd" />-->
+<!--          </svg>-->
+<!--          Back to my Clubs-->
+        <%# end %>
+      </div>
     </div>
   </div>
 
@@ -36,6 +52,10 @@
         <a href="#pending" data-tab-name="pending" data-tabs-target="tab" data-action="click->tabs#select" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium cursor-pointer">
           Pending Approval
           <span class="ml-2 rounded-full bg-gray-100 dark:bg-gray-700 px-2.5 py-0.5 text-xs font-medium text-gray-900 dark:text-gray-100"><%= @pending_members.count %></span>
+        </a>
+        <a href="#invitations" data-tab-name="invitations" data-tabs-target="tab" data-action="click->tabs#select" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium cursor-pointer">
+          Pending Invitations
+          <span class="ml-2 rounded-full bg-gray-100 dark:bg-gray-700 px-2.5 py-0.5 text-xs font-medium text-gray-900 dark:text-gray-100"><%= @pending_invitations.count %></span>
         </a>
         <a href="#disabled" data-tab-name="disabled" data-tabs-target="tab" data-action="click->tabs#select" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium cursor-pointer">
           Disabled
@@ -133,6 +153,59 @@
       <% end %>
     </div>
 
+    <!-- Pending Invitations Tab -->
+    <div id="invitations-content" data-tab-name="invitations" data-tabs-target="panel" class="hidden">
+      <% if @pending_invitations.present? %>
+        <div class="overflow-hidden bg-white shadow dark:bg-gray-800 sm:rounded-md">
+          <ul role="list" class="divide-y divide-gray-200 dark:divide-gray-700">
+            <% @pending_invitations.each do |invitation| %>
+              <li class="px-4 py-4 sm:px-6">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center min-w-0 flex-1">
+                    <div class="min-w-0 flex-1">
+                      <div class="flex items-center gap-3">
+                        <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                          <%= invitation.email %>
+                        </p>
+                        <span class="inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700 dark:bg-blue-900/50 dark:text-blue-300">Invited</span>
+                      </div>
+                      <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                        Invited by <%= invitation.invited_by.first_name %> <%= invitation.invited_by.last_name %>
+                      </p>
+                      <p class="text-xs text-gray-500 dark:text-gray-400">
+                        Expires <%= time_ago_in_words(invitation.expires_at) %> from now
+                      </p>
+                    </div>
+                  </div>
+                  <div class="ml-4 flex flex-shrink-0 gap-2">
+                    <button type="button"
+                            data-controller="clipboard"
+                            data-clipboard-text-value="<%= accept_club_invitation_url(token: invitation.token) %>"
+                            data-clipboard-target="button"
+                            data-action="click->clipboard#copy"
+                            class="cursor-pointer inline-flex items-center gap-2 rounded-md bg-gray-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors">
+                      <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                      </svg>
+                      <span>Copy URL</span>
+                    </button>
+                  </div>
+                </div>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      <% else %>
+        <div class="text-center py-12">
+          <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 19v-8.93a2 2 0 01.89-1.664l7-4.666a2 2 0 012.22 0l7 4.666A2 2 0 0121 10.07V19M3 19a2 2 0 002 2h14a2 2 0 002-2M3 19l6.75-4.5M21 19l-6.75-4.5M3 10l6.75 4.5M21 10l-6.75 4.5m0 0l-1.14.76a2 2 0 01-2.22 0l-1.14-.76" />
+          </svg>
+          <h3 class="mt-2 text-sm font-semibold text-gray-900 dark:text-gray-100">No pending invitations</h3>
+          <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Invite members via email to get started!</p>
+        </div>
+      <% end %>
+    </div>
+
     <!-- Disabled Members Tab -->
     <div id="disabled-content" data-tab-name="disabled" data-tabs-target="panel" class="hidden">
       <% if @disabled_members.present? %>
@@ -176,5 +249,15 @@
       <% end %>
     </div>
     </div>
+  </div>
+
+  <div class="w-full mt-4">
+    <%= link_to my_clubs_path, class: "inline-flex items-center rounded-md bg-orange-600 px-4 py-2 text-sm font-medium text-white shadow hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2" do %>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="mr-2 h-5 w-5">
+        <path fill-rule="evenodd" d="M7.72 12.53a.75.75 0 010-1.06l7.5-7.5a.75.75 0 111.06 1.06L9.31 12l6.97 6.97a.75.75 0 11-1.06 1.06l-7.5-7.5z" clip-rule="evenodd" />
+      </svg>
+      Back to my Clubs
+    <% end %>
+    <%#= link_to "← Back to Club", club_path(@club), class: "text-orange-600 hover:underline" %>
   </div>
 </div>
