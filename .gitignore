@@ -48,3 +48,6 @@
 /dataSources/
 /dataSources.local.xml
 
+# Ignore Claude tasks
+.claude/tasks/*
+
