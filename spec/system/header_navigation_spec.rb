@@ -24,6 +24,10 @@ RSpec.describe "Header Navigation", type: :system do
         find('button[aria-label="Toggle menu"]').click
       end
 
+      after do
+        page.current_window.resize_to(1920, 1080)
+      end
+
       it "includes Profile link in mobile menu" do
         within('[data-mobile-menu-target="menu"]') do
           expect(page).to have_link("Profile", href: user_path(user))
