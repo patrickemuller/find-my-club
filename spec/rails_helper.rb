@@ -32,11 +32,38 @@ begin
 rescue ActiveRecord::PendingMigrationError => e
   abort e.to_s.strip
 end
+
 RSpec.configure do |config|
+  config.include FactoryBot::Syntax::Methods
+  # Include Devise test helpers for controller and request specs
+  config.include Devise::Test::ControllerHelpers, type: :controller
+  config.include Devise::Test::ControllerHelpers, type: :view
+
+  [ :system, :request ].each do |test_type|
+    config.include Devise::Test::IntegrationHelpers, type: test_type
+  end
+  # For system tests, we need to use Warden test helpers
+  # and login through the actual UI
+  config.include Warden::Test::Helpers, type: :system
+
+  # Clean up Warden after each test
+  config.after(type: :system) do
+    Warden.test_reset!
+  end
+
+  config.before(:each, type: :system) do
+    driven_by :selenium, using: :headless_chrome, screen_size: [ 1920, 1080 ] do |driver_options|
+      driver_options.add_argument('--window-size=1920,1080')
+      driver_options.add_argument('--disable-gpu')
+      driver_options.add_argument('--no-sandbox')
+      driver_options.add_argument('--disable-dev-shm-usage')
+    end
+  end
+
   # If you're not using ActiveRecord, or you'd prefer not to run each of your
   # examples within a transaction, remove the following line or assign false
   # instead of true.
-  config.use_transactional_fixtures = false
+  # config.use_transactional_fixtures = true
 
   # You can uncomment this line to turn off ActiveRecord support entirely.
   # config.use_active_record = false
@@ -49,14 +76,14 @@ RSpec.configure do |config|
   #     end
   #
   # The different available types are documented in the features, such as in
-  # https://rspec.info/features/7-1/rspec-rails
+  # https://rspec.info/features/8-0/rspec-rails
   #
   # You can also this infer these behaviours automatically by location, e.g.
   # /spec/models would pull in the same behaviour as `type: :model` but this
   # behaviour is considered legacy and will be removed in a future version.
   #
   # To enable this behaviour uncomment the line below.
-  config.infer_spec_type_from_file_location!
+  # config.infer_spec_type_from_file_location!
 
   # Filter lines from Rails gems in backtraces.
   config.filter_rails_from_backtrace!
