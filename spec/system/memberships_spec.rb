@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe "Memberships", type: :system do
+RSpec.describe "Memberships", type: :system, js: true do
   let(:user) { create(:user) }
   let(:owner) { create(:user) }
   let(:public_club) { create(:club, owner: owner, public: true, name: "Public Running Club") }
