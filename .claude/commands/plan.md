@@ -1,8 +1,8 @@
-UNDERSTAND the code structure, the current features, and code style
+UNDERSTAND the code structure by reading the necessary files in ".claude/structure"
 THEN plan the implementation of the feature $ARGUMENTS
 THEN create or update a markdown file with the name of the current branch inside the ".claude/tasks/" folder
 
-A few things to considering during the planning:
+Things to consider during the planning:
 
 - Reuse as much of the code as possible, even if you new classes should be created to encapsulate current behavior and features
 - Plan simply, trying as much as possible to reduce code
@@ -15,4 +15,4 @@ A few things to considering during the planning:
 - Do not make time estimates
 - Do not make line created/updated/removed estimates
 - Include at most 3 edge-cases at the bottom of the document
-- Do not include "design" decisions
+- When making design/layout decisions, focus on Mobile friendly first, then desktop second
