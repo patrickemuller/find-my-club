@@ -1,8 +1,9 @@
 require "ostruct"
 
 class ClubsController < ApplicationController
+  before_action :set_club, except: %i[index show my_clubs]
   before_action :authenticate_user!, except: %i[index show]
-  before_action :set_club, only: %i[show]
+  before_action :authorize_club_owner!, only: %i[edit update destroy members enable disable]
   before_action :parse_category_and_level, only: %i[create update]
 
   rescue_from ActiveRecord::RecordNotFound do
@@ -134,5 +135,9 @@ class ClubsController < ApplicationController
 
   def club_params
     params.require(:club).permit(:active, :name, :description, :rules, :public, :category, :level)
+  end
+
+  def authorize_club_owner!
+    current_user == @club.owner
   end
 end

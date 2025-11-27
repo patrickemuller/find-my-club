@@ -427,4 +427,83 @@ RSpec.describe "Club Invitations", type: :system, js: true do
       expect(ClubInvitation.find(existing_invitation.id)).to be_present
     end
   end
+
+  describe "Managing invitations" do
+    let!(:pending_invitation) { create(:club_invitation, club: club, email: invitee_email, invited_by: owner) }
+
+    describe "Re-sending invitations" do
+      it "allows club owner to re-send an invitation" do
+        # Clear any previous emails
+        ActionMailer::Base.deliveries.clear
+
+        login_as owner
+        visit members_club_path(club)
+
+        # Switch to Pending Invitations tab
+        click_link "Pending Invitations"
+
+        # Re-send the invitation
+        within("li", text: invitee_email) do
+          click_button "Re-send"
+        end
+
+        # Verify success message
+        expect(page).to have_text("Invitation email resent to #{invitee_email}")
+
+        # Verify invitation still exists and is still pending
+        pending_invitation.reload
+        expect(pending_invitation.status).to eq("pending")
+
+        # Verify email was sent
+        perform_enqueued_jobs
+        expect(ActionMailer::Base.deliveries.count).to be >= 1
+      end
+
+      # Note: Authorization and edge case tests are better suited for request specs
+    end
+
+    describe "Deleting invitations" do
+      it "allows club owner to delete an invitation" do
+        login_as owner
+        visit members_club_path(club)
+
+        # Switch to Pending Invitations tab
+        click_link "Pending Invitations"
+
+        # Verify invitation is displayed
+        expect(page).to have_text(invitee_email)
+
+        # Delete the invitation
+        within("li", text: invitee_email) do
+          accept_confirm do
+            click_button "Delete"
+          end
+        end
+
+        # Verify success message
+        expect(page).to have_text("Invitation for #{invitee_email} has been deleted")
+
+        # Verify invitation was deleted from database
+        expect(ClubInvitation.exists?(pending_invitation.id)).to be false
+      end
+
+      it "shows confirmation dialog before deleting" do
+        login_as owner
+        visit members_club_path(club)
+
+        # Switch to Pending Invitations tab
+        click_link "Pending Invitations"
+
+        # Verify confirmation dialog appears (implicit in accept_confirm usage)
+        within("li", text: invitee_email) do
+          dismiss_confirm do
+            click_button "Delete"
+          end
+        end
+
+        # Invitation should still exist (deletion was cancelled)
+        expect(ClubInvitation.exists?(pending_invitation.id)).to be true
+      end
+    end
+  end
 end

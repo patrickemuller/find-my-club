@@ -1,7 +1,8 @@
 class ClubInvitationsController < ApplicationController
   before_action :authenticate_user!, except: [ :accept, :reject ]
   before_action :set_club, only: [ :new, :create ]
-  before_action :authorize_owner!, only: [ :new, :create ]
+  before_action :set_invitation, only: [ :resend, :destroy ]
+  before_action :authorize_owner!, only: [ :new, :create, :resend, :destroy ]
   before_action :set_invitation_by_token, only: [ :accept, :reject ]
 
   rescue_from ActiveRecord::RecordNotFound do
@@ -73,6 +74,26 @@ class ClubInvitationsController < ApplicationController
     end
   end
 
+  def resend
+    if @invitation.pending?
+      SendClubInvitationJob.perform_later(@invitation.id)
+      redirect_to members_club_path(@invitation.club), notice: "Invitation email resent to #{@invitation.email}."
+    else
+      redirect_to members_club_path(@invitation.club), alert: "Cannot resend invitation. It may have already been accepted, rejected, or expired."
+    end
+  end
+
+  def destroy
+    email = @invitation.email
+    club = @invitation.club
+
+    if @invitation.destroy
+      redirect_to members_club_path(club), notice: "Invitation for #{email} has been deleted."
+    else
+      redirect_to members_club_path(club), alert: "Unable to delete invitation."
+    end
+  end
+
   private
 
   def set_club
@@ -87,6 +108,11 @@ class ClubInvitationsController < ApplicationController
 
   def set_invitation_by_token
     @invitation = ClubInvitation.find_by!(token: params[:token])
+  end
+
+  def set_invitation
+    @invitation = ClubInvitation.find(params[:id])
+    @club = @invitation.club
   end
 
   def parse_emails(emails_string)

@@ -38,7 +38,11 @@ Rails.application.routes.draw do
     end
 
     # Invitations (owner only)
-    resources :club_invitations, only: [ :create ], path: "invitations"
+    resources :club_invitations, only: [ :create, :destroy ], path: "invitations" do
+      member do
+        post :resend
+      end
+    end
 
     # Events
     resources :events do

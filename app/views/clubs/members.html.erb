@@ -189,6 +189,11 @@
                       </svg>
                       <span>Copy URL</span>
                     </button>
+                    <%= button_to "Re-send", resend_club_club_invitation_path(@club, invitation), method: :post,
+                        class: "cursor-pointer inline-flex items-center rounded-md bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700" %>
+                    <%= button_to "Delete", club_club_invitation_path(@club, invitation), method: :delete,
+                        data: { turbo_confirm: "Are you sure you want to delete this invitation for #{invitation.email}?" },
+                        class: "cursor-pointer inline-flex items-center rounded-md bg-red-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-red-700" %>
                   </div>
                 </div>
               </li>
