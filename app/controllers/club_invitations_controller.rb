@@ -4,6 +4,7 @@ class ClubInvitationsController < ApplicationController
   before_action :set_invitation, only: [ :resend, :destroy ]
   before_action :authorize_owner!, only: [ :new, :create, :resend, :destroy ]
   before_action :set_invitation_by_token, only: [ :accept, :reject ]
+  before_action :ensure_club_setup_complete!, only: [ :new, :create ]
 
   rescue_from ActiveRecord::RecordNotFound do
     redirect_to root_path, alert: "Invitation not found."
@@ -117,5 +118,11 @@ class ClubInvitationsController < ApplicationController
 
   def parse_emails(emails_string)
     emails_string.to_s.split(/[\n,;]/).map(&:strip).reject(&:blank?).uniq
+  end
+
+  def ensure_club_setup_complete!
+    if @club.incomplete_setup?
+      redirect_to club_payments_path(@club), alert: "Please complete your Stripe setup before inviting members"
+    end
   end
 end
