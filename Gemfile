@@ -56,6 +56,9 @@ gem "resend"
 gem "aws-sdk-s3"
 gem "openssl"
 
+# Properly configure CORS for the application
+gem "rack-cors"
+
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
@@ -75,6 +78,9 @@ gem "devise"
 
 # Pagination for Rails applications [https://github.com/kaminari/kaminari]
 gem "kaminari"
+
+# Stripe payment processing [https://stripe.com/docs/api]
+gem "stripe", "~> 12.0"
 
 group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]

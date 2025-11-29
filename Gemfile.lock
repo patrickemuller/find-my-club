@@ -316,6 +316,9 @@ GEM
     raabro (1.4.0)
     racc (1.8.1)
     rack (3.2.4)
+    rack-cors (3.0.0)
+      logger
+      rack (>= 3.0.14)
     rack-session (2.1.1)
       base64 (>= 0.1.0)
       rack (>= 3.0.0)
@@ -451,6 +454,7 @@ GEM
     stimulus-rails (1.3.4)
       railties (>= 6.0.0)
     stringio (3.1.8)
+    stripe (12.6.0)
     tailwindcss-rails (4.4.0)
       railties (>= 7.0.0)
       tailwindcss-ruby (~> 4.0)
@@ -532,6 +536,7 @@ DEPENDENCIES
   pg
   propshaft
   puma
+  rack-cors
   rails
   resend
   rspec-rails (~> 8.0)
@@ -541,6 +546,7 @@ DEPENDENCIES
   solid_cache
   solid_queue
   stimulus-rails
+  stripe (~> 12.0)
   tailwindcss-rails (~> 4.1)
   thruster
   turbo-rails

@@ -1,10 +1,11 @@
 require "ostruct"
 
 class ClubsController < ApplicationController
-  before_action :set_club, except: %i[index show my_clubs]
+  before_action :set_club, except: %i[index new create show my_clubs]
   before_action :authenticate_user!, except: %i[index show]
   before_action :authorize_club_owner!, only: %i[edit update destroy members enable disable]
   before_action :parse_category_and_level, only: %i[create update]
+  before_action :ensure_club_setup_complete!, only: %i[members]
 
   rescue_from ActiveRecord::RecordNotFound do
     render file: "#{Rails.root}/public/404.html", layout: false, status: :not_found
@@ -12,6 +13,7 @@ class ClubsController < ApplicationController
 
   def index
     @clubs = Club.publicly_visible
+                 .complete_setup
                  .search(params[:q])
                  .with_category(params[:category])
                  .with_level(params[:level])
@@ -22,10 +24,16 @@ class ClubsController < ApplicationController
     # Do not raise an error here
     @club = Club.friendly.find(params[:id])
 
-    # Private clubs should not be accessible using URL guessing
-    # If you are the owner, you can access it
+    # Disabled clubs should return 404
     if @club.disabled?
       render file: "#{Rails.root}/public/404.html", layout: false, status: :not_found
+      return
+    end
+
+    # Paid clubs with incomplete setup should only be accessible to the owner
+    if @club.incomplete_setup? && (!current_user || !@club.is_owner?(current_user))
+      render file: "#{Rails.root}/public/404.html", layout: false, status: :not_found
+      return
     end
 
     # Load upcoming events for members and owners (limit to 3 for preview)
@@ -47,8 +55,14 @@ class ClubsController < ApplicationController
 
     respond_to do |format|
       if @club.save
-        format.html { redirect_to @club, notice: "Club was successfully created." }
-        format.json { render :show, status: :created, location: @club }
+        # Redirect to Stripe setup if this is a paid club
+        if @club.paid?
+          format.html { redirect_to club_payments_path(@club), notice: "Club created! Now let's set up payments." }
+          format.json { render :show, status: :created, location: @club }
+        else
+          format.html { redirect_to @club, notice: "Club was successfully created." }
+          format.json { render :show, status: :created, location: @club }
+        end
       else
         format.html { render :new, status: :unprocessable_entity }
         format.json { render json: @club.errors, status: :unprocessable_entity }
@@ -58,11 +72,18 @@ class ClubsController < ApplicationController
 
   def update
     @club = current_user.clubs.friendly.find(params[:id])
+    was_paid = @club.paid?
 
     respond_to do |format|
       if @club.update(club_params)
-        format.html { redirect_to @club, notice: "Club was successfully updated.", status: :see_other }
-        format.json { render :show, status: :ok, location: @club }
+        # If club was just changed to paid, redirect to Stripe setup
+        if @club.paid? && !was_paid
+          format.html { redirect_to club_payments_path(@club), notice: "Club updated! Now let's set up payments." }
+          format.json { render :show, status: :ok, location: @club }
+        else
+          format.html { redirect_to @club, notice: "Club was successfully updated.", status: :see_other }
+          format.json { render :show, status: :ok, location: @club }
+        end
       else
         format.html { render :edit, status: :unprocessable_entity }
         format.json { render json: @club.errors, status: :unprocessable_entity }
@@ -134,10 +155,16 @@ class ClubsController < ApplicationController
   end
 
   def club_params
-    params.require(:club).permit(:active, :name, :description, :rules, :public, :category, :level)
+    params.require(:club).permit(:active, :name, :description, :rules, :public, :category, :level, :paid)
   end
 
   def authorize_club_owner!
     current_user == @club.owner
+  end
+
+  def ensure_club_setup_complete!
+    if @club.incomplete_setup?
+      redirect_to club_payments_path(@club), alert: "Please complete your Stripe setup first"
+    end
   end
 end

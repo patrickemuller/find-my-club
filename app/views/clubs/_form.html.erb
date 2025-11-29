@@ -10,7 +10,7 @@
     </div>
   <% end %>
 
-  <div class="w-full grid grid-cols-2">
+  <div class="w-full grid grid-cols-2" data-controller="paid-club">
     <div class="col-span-2 mt-4">
       <%= form.label :name, class: "block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300" %>
       <%= form.text_field :name, required: true, placeholder: "The name of my incredible club from Vancouver", class: "block w-full rounded-md p-2 border border-gray-300 bg-white shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-400" %>
@@ -25,6 +25,60 @@
       <div class="flex items-center mt-2">
         <%= form.check_box :public, class: "h-4 w-4 rounded border-gray-300 text-orange-600 focus:ring-orange-500 dark:bg-gray-900 dark:border-gray-700" %>
         <label for="club_public" class="ml-2 text-sm text-gray-700 dark:text-gray-300">Make this club public</label>
+      </div>
+    </div>
+
+    <div class="col-span-2 mt-4">
+      <div class="flex items-center gap-2">
+        <%= form.label :paid, "Paid Club?", class: "block text-sm font-medium text-gray-700 dark:text-gray-300" %>
+        <%= render partial: "shared/tooltip", locals: { text: "Paid clubs require members to subscribe (weekly, monthly, or yearly). You'll need to connect a Stripe account to accept payments." } %>
+      </div>
+
+      <div class="flex items-center mt-2">
+        <%= form.check_box :paid, class: "h-4 w-4 rounded border-gray-300 text-orange-600 focus:ring-orange-500 dark:bg-gray-900 dark:border-gray-700", data: { paid_club_target: "checkbox", action: "change->paid-club#toggle" } %>
+        <label for="club_paid" class="ml-2 text-sm text-gray-700 dark:text-gray-300">This is a paid club</label>
+      </div>
+    </div>
+
+    <!-- Stripe Information Section (shown when paid is checked) -->
+    <div class="col-span-2 mt-4 <%= 'hidden' unless club.paid? %>" data-paid-club-target="stripeInfo">
+      <div class="bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-800 rounded-lg p-4">
+        <h3 class="text-sm font-semibold text-indigo-900 dark:text-indigo-100 mb-2">💳 Stripe Payment Setup</h3>
+
+        <% if club.persisted? && club.stripe_connected? %>
+          <div class="flex items-center gap-2 text-sm text-green-700 dark:text-green-300 mb-2">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+            </svg>
+            <span class="font-medium">Stripe account connected</span>
+          </div>
+          <p class="text-sm text-indigo-700 dark:text-indigo-300">
+            Your Stripe account is ready to accept payments. <%= link_to "Manage Stripe settings", club_payments_path(club), class: "underline font-medium" %>
+          </p>
+        <% elsif club.persisted? && club.incomplete_setup? %>
+          <div class="flex items-center gap-2 text-sm text-yellow-700 dark:text-yellow-300 mb-2">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+            </svg>
+            <span class="font-medium">Setup Incomplete</span>
+          </div>
+          <p class="text-sm text-indigo-700 dark:text-indigo-300 mb-3">
+            Your club is not visible to members yet. <%= link_to "Complete Stripe setup", club_payments_path(club), class: "underline font-medium" %> to connect your account and create subscription plans.
+          </p>
+        <% else %>
+          <p class="text-sm text-indigo-700 dark:text-indigo-300 mb-3">
+            <% if club.persisted? %>
+              After saving, you'll be redirected to connect your Stripe account and configure subscription plans.
+            <% else %>
+              After creating this club, you'll be guided through connecting your Stripe account to accept member payments.
+            <% end %>
+          </p>
+          <div class="text-xs text-indigo-600 dark:text-indigo-400 space-y-1">
+            <p>✓ Payments deposited directly to your bank account</p>
+            <p>✓ Minimal platform fees - Check <b><a href="https://stripe.com/en-ca/pricing" target="_blank" referrerpolicy="no-referrer">Stripe pricing</a></b> for more information</p>
+            <p>✓ Support for cards, Apple Pay, and Google Pay</p>
+          </div>
+        <% end %>
       </div>
     </div>
 
