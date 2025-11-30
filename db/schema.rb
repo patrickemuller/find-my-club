@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_28_213920) do
+ActiveRecord::Schema[8.1].define(version: 2025_11_30_002933) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -100,6 +100,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_28_213920) do
     t.boolean "public", default: false
     t.string "slug"
     t.string "stripe_account_id"
+    t.string "stripe_account_refresh_token"
     t.string "stripe_account_status"
     t.datetime "updated_at", null: false
     t.index ["owner_id"], name: "index_clubs_on_owner_id"
@@ -306,11 +307,10 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_28_213920) do
     t.string "name"
     t.string "plan_type", null: false
     t.integer "price_cents", null: false
-    t.string "stripe_price_id", null: false
+    t.string "stripe_product_id", null: false
     t.datetime "updated_at", null: false
-    t.index ["club_id", "plan_type"], name: "index_subscription_plans_on_club_id_and_plan_type", unique: true
     t.index ["club_id"], name: "index_subscription_plans_on_club_id"
-    t.index ["stripe_price_id"], name: "index_subscription_plans_on_stripe_price_id", unique: true
+    t.index ["stripe_product_id"], name: "index_subscription_plans_on_stripe_product_id", unique: true
   end
 
   create_table "users", force: :cascade do |t|

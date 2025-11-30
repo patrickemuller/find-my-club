@@ -24,6 +24,9 @@ Rails.application.routes.draw do
   # Places autocomplete API endpoint
   get "places/autocomplete", to: "places#autocomplete"
 
+  # Stripe Connect (callback)
+  get "/callbacks/stripe", to: "clubs/stripe_accounts#callback", as: :callbacks_stripe
+
   resources :clubs do
     # Membership actions (join/leave)
     resource :membership, only: [ :create, :destroy ]
@@ -97,12 +100,6 @@ Rails.application.routes.draw do
       post :resume
     end
   end
-
-  # Stripe Connect (callback)
-  get "/callbacks/stripe", to: "callbacks/stripe#callback"
-
-  # Stripe webhooks
-  post "/webhooks/stripe", to: "webhooks/stripe#create"
 
   # User profiles
   resources :users, only: [ :show ], controller: "users/profiles"

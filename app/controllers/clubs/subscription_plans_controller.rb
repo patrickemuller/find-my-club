@@ -20,15 +20,24 @@ class Clubs::SubscriptionPlansController < ApplicationController
     end
 
     begin
-      stripe_price = StripeService.create_price(
-        @club.stripe_account_id,
-        @plan.name,
-        @plan.description,
-        @plan.plan_type,
-        @plan.price_cents
+      product = Stripe::Product.create(
+        {
+          name: @plan.name,
+          description: @plan.description,
+          default_price_data: {
+            unit_amount: @plan.price_cents,
+            currency: "cad",
+            recurring: {
+              interval: @plan.plan_type
+            }
+          }
+        },
+        {
+          stripe_account: @club.stripe_account_id
+        }
       )
 
-      @plan.stripe_price_id = stripe_price.id
+      @plan.stripe_product_id = product.id
 
       if @plan.save
         redirect_to club_payments_path(@club), notice: "Subscription plan created successfully!"

@@ -33,7 +33,7 @@
 
       <div>
         <%= form.label :price_cents, "Price (CAD)", class: "block text-sm font-medium mb-2" %>
-        <%= form.number_field :price_cents, step: 0.01, placeholder: "20.00", class: "w-full pl-8 pr-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600", value: form.object.price_in_dollars %>
+        <%= form.number_field :price_cents, step: 0.01, placeholder: "20.00", class: "w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600", value: form.object.price_in_dollars %>
         <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Enter the price in CAD (e.g., 20.00)</p>
       </div>
 

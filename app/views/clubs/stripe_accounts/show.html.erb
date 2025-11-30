@@ -94,7 +94,11 @@
           </svg>
           <div>
             <p class="font-semibold text-yellow-900 dark:text-yellow-100">Pending Setup</p>
-            <p class="text-sm text-yellow-700 dark:text-yellow-300">Your Stripe account is connected but setup is incomplete.</p>
+            <p class="text-sm text-yellow-700 dark:text-yellow-300">
+              Your Stripe account is connected but setup is incomplete.
+              This usually means you have not completed the necessary steps on Stripe to start receiving payments.
+              When you finish the process, RELOAD this page.
+            </p>
           </div>
         </div>
         <%= button_to "Complete Stripe Setup", club_payments_path(@club), method: :post, class: "inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg" %>
@@ -176,7 +180,7 @@
                 <div class="flex justify-between items-center">
                   <div class="text-xs text-gray-500 dark:text-gray-500">
                     <% if Rails.env.development? %>
-                      <p>Stripe Price ID: <code class="font-mono"><%= plan.stripe_price_id %></code></p>
+                      <p>Stripe Price ID: <code class="font-mono"><%= plan.stripe_product_id %></code></p>
                     <% end %>
                     <p>Created: <%= plan.created_at.strftime("%B %d, %Y") %></p>
                   </div>
