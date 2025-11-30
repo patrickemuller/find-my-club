@@ -1,4 +1,4 @@
-<div class="max-w-3xl mx-auto p-6">
+<div class="w-full mx-auto py-6">
   <h1 class="text-3xl font-bold mb-6">Payment Setup</h1>
 
   <!-- Setup Required Warning -->
@@ -35,19 +35,25 @@
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 flex-shrink-0 mt-0.5">
           <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
         </svg>
-        <span>Minimal platform fees - Check <b><a href="https://stripe.com/en-ca/pricing" target="_blank" referrerpolicy="no-referrer" class="underline">Stripe pricing</a></b></span>
+        <span>Check <b><a href="https://stripe.com/en-ca/pricing" target="_blank" referrerpolicy="no-referrer" class="underline">Stripe pricing</a></b> before creating your account</span>
       </li>
       <li class="flex items-start gap-2">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 flex-shrink-0 mt-0.5">
           <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
         </svg>
-        <span>Members can pay with credit cards, Apple Pay, and Google Pay</span>
+        <span>Members can pay with credit cards, Apple Pay, Google Pay, or other payment methods</span>
       </li>
       <li class="flex items-start gap-2">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 flex-shrink-0 mt-0.5">
           <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
         </svg>
-        <span>A complete dashboard to manage payments, invoices, and financial reports</span>
+        <span>You have full control over their memberships and payments</span>
+      </li>
+      <li class="flex items-start gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 flex-shrink-0 mt-0.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+        </svg>
+        <span>Your members have access to invoices, can stop, and resume their memberships with just one click</span>
       </li>
     </ul>
   </div>
@@ -81,7 +87,12 @@
             <p class="text-sm text-green-700 dark:text-green-300">Your Stripe account is connected and ready to accept payments.</p>
           </div>
         </div>
-        <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">Account ID: <code class="font-mono"><%= @club.stripe_account_id %></code></p>
+
+        <!-- Prevent displaying Stripe information in Production -->
+        <% if Rails.env.development? %>
+          <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">Account ID: <code class="font-mono"><%= @club.stripe_account_id %></code></p>
+        <% end %>
+
         <%= button_to club_payments_path(@club), method: :delete, data: { turbo_confirm: "Are you sure? This will prevent you from accepting new subscriptions. It can also create problems with current subscriptions from your members." }, class: "cursor-pointer text-sm text-red-600 dark:text-red-400 hover:underline" do %>
           Disconnect Stripe Account
         <% end %>
@@ -133,7 +144,7 @@
   </div>
 
   <!-- Step 2: Configure Subscription Plans -->
-  <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6 <%= 'opacity-50' unless @club.stripe_connected? %>">
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6<%= 'opacity-50' unless @club.stripe_connected? %>">
     <div class="flex items-center gap-3 mb-4">
       <% if @club.subscription_plans.any? %>
         <div class="flex h-8 w-8 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
@@ -154,9 +165,9 @@
         <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Set up your subscription pricing (weekly, monthly, or yearly).</p>
 
         <% if @club.subscription_plans.any? %>
-          <div class="space-y-4 mb-4">
+          <div class="space-y-4 mb-4 grid grid-cols-3 gap-2">
             <% @club.subscription_plans.each do |plan| %>
-              <div class="bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+              <div class="bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-lg p-4 col-span-3 md:col-span-1">
                 <div class="flex justify-between items-start mb-2">
                   <div>
                     <h3 class="font-semibold"><%= plan.name.presence || plan.plan_type.capitalize %> Plan</h3>
@@ -179,9 +190,11 @@
 
                 <div class="flex justify-between items-center">
                   <div class="text-xs text-gray-500 dark:text-gray-500">
+                    <!-- Prevent displaying Stripe information in Production -->
                     <% if Rails.env.development? %>
                       <p>Stripe Price ID: <code class="font-mono"><%= plan.stripe_product_id %></code></p>
                     <% end %>
+
                     <p>Created: <%= plan.created_at.strftime("%B %d, %Y") %></p>
                   </div>
                   <%= link_to "Edit", edit_club_subscription_plan_path(@club, plan), class: "text-indigo-600 dark:text-indigo-400 hover:underline text-sm" %>
@@ -190,7 +203,7 @@
             <% end %>
           </div>
 
-          <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-4">
+          <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-4 col-span-3">
             <p class="text-sm text-blue-800 dark:text-blue-200">
               <strong>Note:</strong> To modify prices, you'll need to create new plans. Existing subscriber prices will not change.
             </p>

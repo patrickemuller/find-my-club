@@ -57,11 +57,10 @@ Rails.application.routes.draw do
     # Subscription Plans (owner only)
     resources :subscription_plans, controller: "clubs/subscription_plans", only: [ :new, :create, :edit, :update ]
 
-    # Checkout (members)
-    resource :checkout, controller: "clubs/checkout", only: [ :new, :create ] do
-      get :success
-      get :cancel
-    end
+    # Checkout (members) - for paid memberships
+    get "checkout", to: "clubs/stripe_accounts#checkout", as: :checkout
+    post "checkout", to: "clubs/stripe_accounts#create_checkout_session"
+    get "checkout/success", to: "clubs/stripe_accounts#success", as: :checkout_success
 
     # Events
     resources :events do

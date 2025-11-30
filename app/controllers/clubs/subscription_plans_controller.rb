@@ -20,16 +20,16 @@ class Clubs::SubscriptionPlansController < ApplicationController
     end
 
     begin
-      product = Stripe::Product.create(
+
+      price = Stripe::Price.create(
         {
-          name: @plan.name,
-          description: @plan.description,
-          default_price_data: {
-            unit_amount: @plan.price_cents,
-            currency: "cad",
-            recurring: {
-              interval: @plan.plan_type
-            }
+          currency: "cad",
+          unit_amount: @plan.price_cents,
+          recurring: {
+            interval: @plan.plan_type
+          },
+          product_data: {
+            name: @plan.name
           }
         },
         {
@@ -37,7 +37,9 @@ class Clubs::SubscriptionPlansController < ApplicationController
         }
       )
 
-      @plan.stripe_product_id = product.id
+      # TODO: rename this column back to price
+      #       Stripe::Checkout::Session use the Price API instead of products
+      @plan.stripe_product_id = price.id
 
       if @plan.save
         redirect_to club_payments_path(@club), notice: "Subscription plan created successfully!"

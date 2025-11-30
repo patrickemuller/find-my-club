@@ -44,8 +44,13 @@
               Membership Disabled
             </span>
           <% else %>
-            <%= button_to "#{@club.private? ? 'Ask to Join' : 'Join'}", club_membership_path(@club), method: :post,
-                class: "inline-flex items-center rounded-md bg-orange-600 px-6 py-2.5 text-lg font-semibold text-white shadow hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2" %>
+            <% if @club.paid? %>
+              <%= link_to "Join Club", club_checkout_path(@club),
+                  class: "inline-flex items-center rounded-md bg-orange-600 px-6 py-2.5 text-lg font-semibold text-white shadow hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2" %>
+            <% else %>
+              <%= button_to "#{@club.private? ? 'Ask to Join' : 'Join Club'}", club_membership_path(@club), method: :post,
+                  class: "inline-flex items-center rounded-md bg-orange-600 px-6 py-2.5 text-lg font-semibold text-white shadow hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2" %>
+            <% end %>
           <% end %>
         <% else %>
           <%= link_to "Sign in to Join", new_user_session_path, class: "inline-flex items-center rounded-md bg-orange-600 px-6 py-2.5 text-lg font-semibold text-white shadow hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2" %>

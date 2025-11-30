@@ -1,0 +1,61 @@
+<% content_for :title, "Join #{@club.name}" %>
+
+<div class="w-full md:mt-8">
+  <div class="w-full">
+    <%= render partial: 'shared/breadcrumbs', locals: {
+      links_and_text: [[clubs_path, "Clubs"], [club_path(@club), @club.name], [club_checkout_path(@club), "Join"]]
+    } %>
+  </div>
+
+  <div class="w-full mx-auto mt-8">
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold tracking-tight">Choose Your Membership Plan</h1>
+      <p class="mt-2 text-gray-600 dark:text-gray-400">
+        Select a membership plan to join <%= @club.name %>
+      </p>
+    </div>
+
+    <% if @subscription_plans.any? %>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <% @subscription_plans.each do |plan| %>
+          <div class="rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800 p-6 shadow-sm hover:shadow-md transition-shadow">
+            <div class="mb-4">
+              <h3 class="text-xl font-bold text-gray-900 dark:text-gray-100"><%= plan.name %></h3>
+              <div class="mt-2 flex items-baseline">
+                <span class="text-3xl font-extrabold text-gray-900 dark:text-gray-100">
+                  $<%= sprintf('%.2f', plan.price_in_dollars) %>
+                </span>
+                <span class="ml-1 text-gray-500 dark:text-gray-400">
+                  / <%= plan.plan_type %>
+                </span>
+              </div>
+            </div>
+
+            <p class="mb-6 text-sm text-gray-600 dark:text-gray-400">
+              <%= plan.description %>
+            </p>
+
+            <%= button_to "Select Plan", club_checkout_path(@club),
+                method: :post,
+                params: { subscription_plan_id: plan.id },
+                data: { turbo: false },
+                class: "cursor-pointer w-full inline-flex justify-center items-center rounded-md bg-orange-600 px-4 py-2.5 text-sm font-semibold text-white shadow hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2" %>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="rounded-xl border border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800 p-8 text-center">
+        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">No membership plans available</h3>
+        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+          This club hasn't set up any membership plans yet. Please contact the club owner.
+        </p>
+        <div class="mt-6">
+          <%= link_to "Back to Club", club_path(@club), class: "inline-flex items-center rounded-md bg-orange-600 px-3 py-2 text-sm font-semibold text-white shadow hover:bg-orange-700" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

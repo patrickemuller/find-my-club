@@ -1,7 +1,7 @@
 class Clubs::StripeAccountsController < ApplicationController
-  before_action :authenticate_user!
+  before_action :authenticate_user!, except: [ :success ]
   before_action :set_club
-  before_action :authorize_owner!
+  before_action :authorize_owner!, except: [ :checkout, :create_checkout_session, :success ]
 
   def new
     # Show connect Stripe page
@@ -45,6 +45,113 @@ class Clubs::StripeAccountsController < ApplicationController
   def destroy
     @club.update(stripe_account_id: nil, stripe_account_status: nil)
     redirect_to @club, notice: "Stripe account disconnected."
+  end
+
+  def checkout
+    # Show available subscription plans
+    @subscription_plans = @club.subscription_plans.active
+
+    unless @club.can_accept_payments?
+      redirect_to @club, alert: "This club is not set up to accept payments yet."
+    end
+
+    if current_user.can_join?(@club)
+      # User can join, show checkout page
+    else
+      redirect_to @club, alert: "You cannot join this club."
+    end
+  end
+
+  def create_checkout_session
+    subscription_plan = @club.subscription_plans.find(params[:subscription_plan_id])
+
+    unless @club.can_accept_payments?
+      redirect_to @club, alert: "This club is not set up to accept payments yet."
+    end
+
+    unless current_user.can_join?(@club)
+      redirect_to @club, alert: "You cannot join this club."
+    end
+
+    begin
+      # Create Stripe Checkout Session
+      session = Stripe::Checkout::Session.create(
+        {
+          mode: "subscription",
+          customer_email: current_user.email,
+          line_items: [
+            {
+              price: subscription_plan.stripe_product_id,
+              quantity: 1
+            }
+          ],
+          success_url: "#{club_checkout_success_url(@club)}?session_id={CHECKOUT_SESSION_ID}", # This is a magic String
+          cancel_url: club_url(@club),
+          metadata: {
+            user_id: current_user.id,
+            club_id: @club.id,
+            subscription_plan_id: subscription_plan.id
+          }
+        },
+        { stripe_account: @club.stripe_account_id }
+      )
+
+      redirect_to session.url, allow_other_host: true
+    rescue Stripe::StripeError => e
+      redirect_to club_checkout_path(@club), alert: "An error occurred: #{e.message}"
+    end
+  end
+
+  def success
+    session_id = params[:session_id]
+
+    unless session_id.present?
+      redirect_to @club, alert: "Invalid checkout session."
+    end
+
+    begin
+      # Retrieve the checkout session from Stripe
+      checkout_session = Stripe::Checkout::Session.retrieve(
+        session_id,
+        { stripe_account: @club.stripe_account_id }
+      )
+
+      # Get user from session metadata
+      user_id = checkout_session.metadata.user_id
+      user = User.find(user_id)
+
+      # Check if payment was successful
+      if checkout_session.payment_status == "paid"
+        # Get subscription details
+        subscription = Stripe::Subscription.retrieve(
+          { id: checkout_session.subscription },
+          { stripe_account: @club.stripe_account_id }
+        )
+
+        # Calculate subscription end date
+        subscription_end_date = Time.at(subscription.current_period_end)
+
+        # Determine membership status
+        membership_status = @club.public? ? "active" : "pending"
+
+        # Create membership
+        membership = @club.memberships.create!(
+          user: user,
+          status: membership_status,
+          role: "member",
+          stripe_subscription_id: subscription.id,
+          subscription_end_date: subscription_end_date
+        )
+
+        redirect_to @club, notice: "Payment successful! You have joined #{@club.name}."
+      else
+        redirect_to @club, alert: "Payment was not successful. Please try again."
+      end
+    rescue Stripe::StripeError => e
+      redirect_to @club, alert: "An error occurred: #{e.message}"
+    rescue ActiveRecord::RecordInvalid => e
+      redirect_to @club, alert: "Unable to create membership: #{e.message}"
+    end
   end
 
   private
