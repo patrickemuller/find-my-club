@@ -27,6 +27,9 @@ Rails.application.routes.draw do
   # Stripe Connect (callback)
   get "/callbacks/stripe", to: "clubs/stripe_accounts#callback", as: :callbacks_stripe
 
+  # Stripe webhooks
+  post "/webhooks/stripe", to: "webhooks/stripe#create"
+
   resources :clubs do
     # Membership actions (join/leave)
     resource :membership, only: [ :create, :destroy ]

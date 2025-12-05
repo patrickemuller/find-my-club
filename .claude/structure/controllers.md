@@ -78,6 +78,21 @@ This document provides a breakdown of all controllers in the Find My Club applic
 - **Actions:**
   - `autocomplete` - Returns location suggestions (API endpoint)
 
+## Webhooks Controllers
+
+### Stripe Webhooks Controller
+**File:** `app/controllers/webhooks/stripe_controller.rb`
+- Handles Stripe webhook events
+- **Actions:**
+  - `create` - Receives and processes Stripe webhook events
+- **Handled Events:**
+  - `customer.subscription.updated` - Subscription status changed
+  - `customer.subscription.deleted` - Subscription cancelled
+  - `invoice.paid` - Invoice successfully paid
+  - `invoice.payment_failed` - Invoice payment failed
+  - `invoice.updated` - Invoice updated
+- **Security:** Verifies Stripe webhook signatures
+
 ## Users Controllers
 
 ### Profiles Controller
@@ -109,6 +124,7 @@ The application uses nested routing:
 - `/my-clubs` - User's clubs (owned or joined)
 - `/users/:id` - User profiles
 - `/users/subscriptions` - User subscriptions
+- `/webhooks/stripe` - Stripe webhook endpoint (POST)
 
 ## Authorization Notes
 

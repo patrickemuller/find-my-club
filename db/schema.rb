@@ -162,23 +162,6 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_30_015525) do
     t.index ["user_id"], name: "index_memberships_on_user_id"
   end
 
-  create_table "payment_invoices", force: :cascade do |t|
-    t.integer "amount_cents", null: false
-    t.bigint "club_subscription_id", null: false
-    t.datetime "created_at", null: false
-    t.string "currency", null: false
-    t.string "invoice_number"
-    t.string "invoice_pdf_url"
-    t.datetime "paid_at"
-    t.datetime "period_end"
-    t.datetime "period_start"
-    t.string "status", null: false
-    t.string "stripe_invoice_id", null: false
-    t.datetime "updated_at", null: false
-    t.index ["club_subscription_id"], name: "index_payment_invoices_on_club_subscription_id"
-    t.index ["stripe_invoice_id"], name: "index_payment_invoices_on_stripe_invoice_id", unique: true
-  end
-
   create_table "solid_queue_blocked_executions", force: :cascade do |t|
     t.string "concurrency_key", null: false
     t.datetime "created_at", null: false
@@ -357,7 +340,6 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_30_015525) do
   add_foreign_key "events", "clubs"
   add_foreign_key "memberships", "clubs"
   add_foreign_key "memberships", "users"
-  add_foreign_key "payment_invoices", "club_subscriptions"
   add_foreign_key "solid_queue_blocked_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_claimed_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_failed_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
