@@ -101,5 +101,9 @@ Rails.application.routes.draw do
   end
 
   # User profiles
-  resources :users, only: [ :show ], controller: "users/profiles"
+  resources :users, only: [ :show ], controller: "users/profiles" do
+    collection do
+      get :subscriptions, to: "users/subscriptions#index"
+    end
+  end
 end

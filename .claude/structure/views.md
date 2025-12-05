@@ -151,6 +151,16 @@ This document provides a breakdown of all view templates in the Find My Club app
 - Displays clubs user is member of
 - Profile carousel with images
 
+### Subscriptions
+
+**Directory:** `users/subscriptions/`
+
+**`index.html.erb`**
+- User subscriptions page
+- Shows all paid club memberships
+- Displays club name (linked to club page), plan name, and pricing
+- Shows member since date
+
 ### Registrations (Devise)
 
 **Directory:** `users/registrations/`

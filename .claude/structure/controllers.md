@@ -88,6 +88,12 @@ This document provides a breakdown of all controllers in the Find My Club applic
   - `edit` - Show form to edit profile
   - `update` - Update user profile
 
+### Subscriptions Controller
+**File:** `app/controllers/users/subscriptions_controller.rb`
+- Manages user subscriptions display
+- **Actions:**
+  - `index` - Display all paid club memberships with their pricing
+
 ### Registrations Controller
 **File:** `app/controllers/users/registrations_controller.rb`
 - Extends Devise registration controller
@@ -102,6 +108,7 @@ The application uses nested routing:
 - `/clubs/:club_id/events/:event_id/event_registrations` - Event registrations
 - `/my-clubs` - User's clubs (owned or joined)
 - `/users/:id` - User profiles
+- `/users/subscriptions` - User subscriptions
 
 ## Authorization Notes
 

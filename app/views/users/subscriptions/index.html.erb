@@ -1,0 +1,74 @@
+<% content_for :title, "My Subscriptions" %>
+
+<div class="w-full md:mt-8">
+  <!-- Page header -->
+  <div class="w-full">
+    <div class="w-full">
+      <%= render partial: 'shared/breadcrumbs', locals: {
+        links_and_text: [
+          [root_path, "Home"], [subscriptions_users_path, "My Subscriptions"]
+        ]
+      } %>
+    </div>
+
+    <div class="w-full flex mt-4 justify-between items-center">
+      <div class="col-span-4 lg:col-span-3 mb-4">
+        <h1 class="text-3xl font-bold tracking-tight">My Subscriptions</h1>
+        <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Manage your paid club memberships</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Subscriptions List -->
+  <div class="mt-6">
+    <% if @paid_memberships.present? %>
+      <div class="overflow-hidden bg-white shadow dark:bg-gray-800 sm:rounded-md">
+        <ul role="list" class="divide-y divide-gray-200 dark:divide-gray-700">
+          <% @paid_memberships.each do |membership| %>
+            <% subscription_plan = membership.club.subscription_plans.active.first %>
+            <li class="px-4 py-4 sm:px-6">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center min-w-0 flex-1">
+                  <div class="min-w-0 flex-1">
+                    <div class="flex items-center gap-3">
+                      <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                        <%= link_to membership.club.name, club_path(membership.club), class: "text-orange-600 hover:text-orange-700 dark:text-orange-400 dark:hover:text-orange-300" %>
+                      </p>
+                      <span class="inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700 dark:bg-green-900/50 dark:text-green-300">Active</span>
+                    </div>
+                    <% if subscription_plan %>
+                      <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">
+                        <%= subscription_plan.name %> -
+                        <span class="font-semibold">$<%= number_with_precision(subscription_plan.price_in_dollars, precision: 2) %></span>
+                        <span class="text-gray-500 dark:text-gray-400">/ <%= subscription_plan.plan_type %></span>
+                      </p>
+                      <% if subscription_plan.description.present? %>
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400"><%= subscription_plan.description %></p>
+                      <% end %>
+                    <% else %>
+                      <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">
+                        No active subscription plan
+                      </p>
+                    <% end %>
+                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Member since <%= membership.created_at.strftime("%B %d, %Y") %></p>
+                  </div>
+                </div>
+              </div>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    <% else %>
+      <div class="text-center py-12">
+        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+        </svg>
+        <h3 class="mt-2 text-sm font-semibold text-gray-900 dark:text-gray-100">No subscriptions</h3>
+        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">You don't have any paid club memberships yet.</p>
+        <div class="mt-6">
+          <%= link_to "Explore Clubs", clubs_path, class: "inline-flex items-center rounded-md bg-orange-600 px-4 py-2 text-sm font-medium text-white shadow hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
