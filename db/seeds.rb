@@ -119,6 +119,9 @@ name_suffixes = %w[Club Team Crew Squad League Collective Association Group Netw
 
   owner = users[i % users.length]
 
+  # Make 10% of clubs paid clubs with mock Stripe data
+  is_paid = (i % 10 == 0)
+
   club = Club.find_or_initialize_by(name: name)
   club.owner = owner
   club.category = category
@@ -127,7 +130,53 @@ name_suffixes = %w[Club Team Crew Squad League Collective Association Group Netw
   club.rules = rules
   club.public = [ true, false ].sample
   club.active = true
+  club.paid = is_paid
+
+  if is_paid
+    club.stripe_account_id = "acct_#{SecureRandom.hex(12)}"
+    club.stripe_account_status = "complete"
+  end
+
   club.save!
+
+  # Create subscription plans for paid clubs
+  if is_paid && club.subscription_plans.empty?
+    # Weekly plan
+    SubscriptionPlan.create!(
+      club: club,
+      name: "Weekly Membership",
+      description: "Access to all club activities for one week",
+      plan_type: "week",
+      price_cents: 999, # $9.99
+      currency: "cad",
+      stripe_product_id: "prod_#{SecureRandom.hex(12)}",
+      active: true
+    )
+
+    # Monthly plan
+    SubscriptionPlan.create!(
+      club: club,
+      name: "Monthly Membership",
+      description: "Full access for one month with all benefits",
+      plan_type: "month",
+      price_cents: 2999, # $29.99
+      currency: "cad",
+      stripe_product_id: "prod_#{SecureRandom.hex(12)}",
+      active: true
+    )
+
+    # Yearly plan
+    SubscriptionPlan.create!(
+      club: club,
+      name: "Annual Membership",
+      description: "Best value! Yearly access with premium perks",
+      plan_type: "year",
+      price_cents: 29999, # $299.99
+      currency: "cad",
+      stripe_product_id: "prod_#{SecureRandom.hex(12)}",
+      active: true
+    )
+  end
 end
 
 puts "Seeding memberships..."
@@ -154,9 +203,42 @@ Club.find_each do |club|
     end
 
     # Create membership if it doesn't exist
-    Membership.find_or_create_by(user: user, club: club) do |membership|
-      membership.status = status
-      membership.role = 'member'
+    membership = Membership.find_or_create_by(user: user, club: club) do |m|
+      m.status = status
+      m.role = 'member'
+    end
+
+    # For paid clubs, add mock Stripe subscription ID to active memberships
+    if club.paid && membership.active? && membership.stripe_subscription_id.blank?
+      membership.update(stripe_subscription_id: "sub_#{SecureRandom.hex(12)}")
+
+      # Create 1-3 mock invoices for each active membership in paid clubs
+      invoice_count = rand(1..3)
+      invoice_count.times do |inv_index|
+        # Create invoices with dates spread over the past 3 months
+        paid_date = rand(1..90).days.ago
+        period_start = paid_date - 1.month
+        period_end = paid_date
+
+        # Randomly select a subscription plan
+        plan = club.subscription_plans.sample
+
+        Invoice.find_or_create_by(
+          stripe_invoice_id: "in_#{SecureRandom.hex(12)}_#{membership.id}_#{inv_index}"
+        ) do |invoice|
+          invoice.user = user
+          invoice.stripe_subscription_id = membership.stripe_subscription_id
+          invoice.club_name = club.name
+          invoice.amount_cents = plan.price_cents
+          invoice.currency = plan.currency
+          invoice.status = "paid"
+          invoice.invoice_number = "INV-#{Date.current.year}-#{rand(1000..9999)}"
+          invoice.invoice_pdf_url = "https://invoice.stripe.com/i/acct_mock/inv_#{SecureRandom.hex(8)}"
+          invoice.period_start = period_start
+          invoice.period_end = period_end
+          invoice.paid_at = paid_date
+        end
+      end
     end
   rescue ActiveRecord::RecordInvalid => e
     # Skip if validation fails (e.g., owner trying to be a member)
@@ -263,11 +345,16 @@ puts "\nDone."
 # Print summary
 puts "\nSummary:"
 puts "Total Clubs: #{Club.count}"
+puts "  Paid Clubs: #{Club.where(paid: true).count}"
+puts "  Free Clubs: #{Club.where(paid: false).count}"
 puts "Total Users: #{User.count}"
+puts "Total Subscription Plans: #{SubscriptionPlan.count}"
 puts "Total Memberships: #{Membership.count}"
 puts "  Active: #{Membership.active.count}"
 puts "  Pending: #{Membership.pending.count}"
 puts "  Disabled: #{Membership.disabled.count}"
+puts "  With Stripe Subscription: #{Membership.where.not(stripe_subscription_id: nil).count}"
+puts "Total Invoices: #{Invoice.count}"
 puts "Total Events: #{Event.count}"
 puts "  Upcoming: #{Event.upcoming.count}"
 puts "  Past: #{Event.past.count}"
