@@ -132,12 +132,12 @@ class Clubs::StripeAccountsController < ApplicationController
         subscription_end_date = Time.at(subscription.current_period_end)
 
         # Determine membership status
-        membership_status = @club.public? ? "active" : "pending"
+        # membership_status = @club.public? ? "active" : "pending"
 
         # Create membership
         membership = @club.memberships.create!(
           user: user,
-          status: membership_status,
+          status: "active",
           role: "member",
           stripe_subscription_id: subscription.id,
           subscription_end_date: subscription_end_date
