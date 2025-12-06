@@ -116,6 +116,7 @@
     <div class="flex grid grid-cols-2 min-w-full gap-4">
       <% if @memberships.present? %>
         <% @memberships.each do |club| %>
+          <% membership = current_user.memberships.find_by(club: club) %>
           <div class="w-full rounded-2xl col-span-2 md:col-span-1 border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100">
             <div class="flex items-start justify-between gap-4">
               <div>
@@ -124,12 +125,18 @@
                 <p class="mt-1 text-sm text-gray-600 dark:text-gray-300"><%= club.formatted_level %></p>
                 <p class="mt-1 text-sm text-gray-600 dark:text-gray-300"><%= club.members_count %> <%= 'member'.pluralize(club.members_count) %></p>
               </div>
-              <span class="inline-flex items-center rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-700 dark:bg-green-900/50 dark:text-green-300">Member</span>
+              <% if membership&.pending? %>
+                <span class="inline-flex items-center rounded-full bg-yellow-100 px-2 py-1 text-xs font-medium text-yellow-700 dark:bg-yellow-900/50 dark:text-yellow-300">Pending Approval</span>
+              <% else %>
+                <span class="inline-flex items-center rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-700 dark:bg-green-900/50 dark:text-green-300">Member</span>
+              <% end %>
             </div>
 
             <div class="mt-4 flex flex-wrap items-center gap-2">
               <%= link_to "View", club_path(club), class: "inline-flex items-center rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-900 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-100 hover:dark:bg-gray-700" %>
-              <%= link_to "Events", club_events_path(club), class: "inline-flex items-center rounded-md border border-purple-300 bg-purple-50 px-3 py-1.5 text-sm font-medium text-purple-800 hover:bg-purple-500 hover:text-white dark:border-purple-600 dark:bg-purple-900/30 dark:text-purple-300" %>
+              <% if membership&.active? %>
+                <%= link_to "Events", club_events_path(club), class: "inline-flex items-center rounded-md border border-purple-300 bg-purple-50 px-3 py-1.5 text-sm font-medium text-purple-800 hover:bg-purple-500 hover:text-white dark:border-purple-600 dark:bg-purple-900/30 dark:text-purple-300" %>
+              <% end %>
               <%= button_to "Leave", club_membership_path(club), method: :delete,
                   data: { turbo_confirm: "Are you sure you want to leave #{club.name}? You'll lose access to all club information and events." },
                   class: "cursor-pointer inline-flex items-center rounded-md bg-red-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-red-700" %>
