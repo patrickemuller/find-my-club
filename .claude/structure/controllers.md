@@ -88,10 +88,11 @@ This document provides a breakdown of all controllers in the Find My Club applic
 - **Handled Events:**
   - `customer.subscription.updated` - Subscription status changed
   - `customer.subscription.deleted` - Subscription cancelled
-  - `invoice.paid` - Invoice successfully paid
+  - `invoice.paid` - Invoice successfully paid (creates Invoice record)
   - `invoice.payment_failed` - Invoice payment failed
   - `invoice.updated` - Invoice updated
 - **Security:** Verifies Stripe webhook signatures
+- **Side Effects:** Creates Invoice records when payments succeed
 
 ## Users Controllers
 

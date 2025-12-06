@@ -160,6 +160,9 @@ This document provides a breakdown of all view templates in the Find My Club app
 - Shows all paid club memberships
 - Displays club name (linked to club page), plan name, and pricing
 - Shows member since date
+- Payment History table with invoices
+- Table columns: Invoice #, Club, Amount, Status, Date, Download button
+- Download button links to Stripe invoice PDF
 
 ### Registrations (Devise)
 

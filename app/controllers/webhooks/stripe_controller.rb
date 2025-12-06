@@ -76,6 +76,25 @@ class Webhooks::StripeController < ApplicationController
     Rails.logger.info "Invoice Number: #{invoice.number}"
     Rails.logger.info "Invoice PDF: #{invoice.invoice_pdf}"
     Rails.logger.info "==============================================="
+
+    # Find the membership via subscription ID
+    membership = Membership.find_by(stripe_subscription_id: invoice.subscription)
+    return unless membership
+
+    # Create invoice record
+    inv = Invoice.find_or_initialize_by(stripe_invoice_id: invoice.id)
+    inv.user = membership.user
+    inv.stripe_subscription_id = invoice.subscription
+    inv.club_name = membership.club.name
+    inv.amount_cents = invoice.amount_paid
+    inv.currency = invoice.currency
+    inv.status = "paid"
+    inv.invoice_number = invoice.number
+    inv.invoice_pdf_url = invoice.invoice_pdf
+    inv.period_start = Time.at(invoice.period_start) if invoice.period_start
+    inv.period_end = Time.at(invoice.period_end) if invoice.period_end
+    inv.paid_at = Time.current
+    inv.save
   end
 
   def handle_invoice_payment_failed(event)

@@ -91,6 +91,10 @@ RSpec.describe "Webhooks::Stripe", type: :request do
       end
 
       context "when receiving invoice.paid event" do
+        let(:user) { create(:user) }
+        let(:club) { create(:club, name: "Test Running Club") }
+        let(:membership) { create(:membership, user: user, club: club, status: :active, stripe_subscription_id: "sub_123456789") }
+
         let(:webhook_payload) do
           {
             id: "evt_test_webhook",
@@ -111,6 +115,10 @@ RSpec.describe "Webhooks::Stripe", type: :request do
           }
         end
 
+        before do
+          membership # Create membership before webhook
+        end
+
         it "returns 200 status" do
           post "/webhooks/stripe", params: payload, headers: { "Stripe-Signature" => "valid_signature" }
           expect(response).to have_http_status(:ok)
@@ -129,6 +137,67 @@ RSpec.describe "Webhooks::Stripe", type: :request do
           expect(Rails.logger).to have_received(:info).with("Invoice Number: INV-2024-001")
           expect(Rails.logger).to have_received(:info).with("Invoice PDF: https://invoice.stripe.com/i/acct_123/test_pdf")
           expect(Rails.logger).to have_received(:info).with("===============================================")
+        end
+
+        it "creates an Invoice record" do
+          expect {
+            post "/webhooks/stripe", params: payload, headers: { "Stripe-Signature" => "valid_signature" }
+          }.to change(Invoice, :count).by(1)
+
+          invoice = Invoice.last
+          expect(invoice.user).to eq(user)
+          expect(invoice.stripe_invoice_id).to eq("in_123456789")
+          expect(invoice.stripe_subscription_id).to eq("sub_123456789")
+          expect(invoice.club_name).to eq("Test Running Club")
+          expect(invoice.amount_cents).to eq(2000)
+          expect(invoice.currency).to eq("usd")
+          expect(invoice.status).to eq("paid")
+          expect(invoice.invoice_number).to eq("INV-2024-001")
+          expect(invoice.invoice_pdf_url).to eq("https://invoice.stripe.com/i/acct_123/test_pdf")
+          expect(invoice.paid_at).to be_present
+        end
+
+        it "does not create duplicate Invoice records on retry" do
+          # First webhook
+          post "/webhooks/stripe", params: payload, headers: { "Stripe-Signature" => "valid_signature" }
+
+          expect {
+            # Retry same webhook
+            post "/webhooks/stripe", params: payload, headers: { "Stripe-Signature" => "valid_signature" }
+          }.not_to change(Invoice, :count)
+        end
+
+        context "when membership is not found" do
+          let(:webhook_payload) do
+            {
+              id: "evt_test_webhook",
+              type: "invoice.paid",
+              data: {
+                object: {
+                  id: "in_999999999",
+                  customer: "cus_999999999",
+                  subscription: "sub_nonexistent",
+                  amount_paid: 2000,
+                  currency: "usd",
+                  period_start: 1.day.ago.to_i,
+                  period_end: 1.month.from_now.to_i,
+                  number: "INV-2024-999",
+                  invoice_pdf: "https://invoice.stripe.com/i/acct_123/test_pdf"
+                }
+              }
+            }
+          end
+
+          it "does not create an Invoice record" do
+            expect {
+              post "/webhooks/stripe", params: payload, headers: { "Stripe-Signature" => "valid_signature" }
+            }.not_to change(Invoice, :count)
+          end
+
+          it "still returns 200 status" do
+            post "/webhooks/stripe", params: payload, headers: { "Stripe-Signature" => "valid_signature" }
+            expect(response).to have_http_status(:ok)
+          end
         end
       end
 

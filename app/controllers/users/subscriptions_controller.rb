@@ -9,5 +9,8 @@ class Users::SubscriptionsController < ApplicationController
                                     .where(clubs: { paid: true })
                                     .includes(club: :subscription_plans)
                                     .distinct
+
+    # Get all invoices for the current user
+    @invoices = current_user.invoices.order(paid_at: :desc)
   end
 end
