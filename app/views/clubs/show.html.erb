@@ -40,9 +40,15 @@
               Pending Approval
             </span>
           <% elsif membership&.disabled? %>
-            <span class="inline-flex items-center rounded-md bg-gray-600 px-6 py-2.5 text-lg font-semibold text-white shadow cursor-not-allowed">
-              Membership Disabled
-            </span>
+            <% if @club.paid? %>
+              <span class="inline-flex items-center rounded-md bg-gray-600 px-6 py-2.5 text-lg font-semibold text-white shadow cursor-pointer">
+                <%= link_to "Reactivate Membership", club_checkout_path(@club) %>
+              </span>
+            <% else %>
+              <span class="inline-flex items-center rounded-md bg-gray-600 px-6 py-2.5 text-lg font-semibold text-white shadow cursor-not-allowed">
+                Membership Disabled
+              </span>
+            <% end %>
           <% else %>
             <% if @club.paid? %>
               <%= link_to "Join Club", club_checkout_path(@club),

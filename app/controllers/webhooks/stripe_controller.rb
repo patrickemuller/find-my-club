@@ -56,8 +56,11 @@ class Webhooks::StripeController < ApplicationController
     # Find the membership via subscription ID and update renewal date
     membership = Membership.find_by(stripe_subscription_id: subscription.id)
     if membership
-      membership.update(subscription_end_date: Time.at(subscription.current_period_end))
-      Rails.logger.info "Updated membership #{membership.id} with renewal date: #{Time.at(subscription.current_period_end)}"
+      membership.update(
+        stripe_subscription_end_date: Time.at(subscription.current_period_end),
+        stripe_subscription_cancel_at_period_end: subscription.cancel_at_period_end
+      )
+      Rails.logger.info "Updated membership #{membership.id} with renewal date: #{Time.at(subscription.current_period_end)} and cancel_at_period_end: #{subscription.cancel_at_period_end}"
     end
   end
 
@@ -69,6 +72,19 @@ class Webhooks::StripeController < ApplicationController
     Rails.logger.info "Status: #{subscription.status}"
     Rails.logger.info "Canceled At: #{Time.at(subscription.canceled_at) if subscription.canceled_at}"
     Rails.logger.info "==============================================="
+
+    # Find the membership via subscription ID
+    membership = Membership.find_by(stripe_subscription_id: subscription.id)
+    if membership
+      # Disable the membership and clear subscription data
+      membership.update(
+        status: "disabled",
+        stripe_subscription_id: nil,
+        stripe_subscription_end_date: nil,
+        stripe_subscription_cancel_at_period_end: nil
+      )
+      Rails.logger.info "Disabled membership #{membership.id} and cleared subscription data"
+    end
   end
 
   def handle_invoice_paid(event)
@@ -86,7 +102,6 @@ class Webhooks::StripeController < ApplicationController
 
     # Find the membership via subscription ID
     membership = Membership.find_by(stripe_subscription_id: invoice.subscription)
-    return unless membership
 
     # Create invoice record
     inv = Invoice.find_or_initialize_by(stripe_invoice_id: invoice.id)

@@ -131,17 +131,16 @@ class Clubs::StripeAccountsController < ApplicationController
         # Calculate subscription end date
         subscription_end_date = Time.at(subscription.current_period_end)
 
-        # Determine membership status
-        # membership_status = @club.public? ? "active" : "pending"
-
-        # Create membership
-        membership = @club.memberships.create!(
-          user: user,
+        # Find or create membership (including disabled ones)
+        membership = @club.memberships.find_or_initialize_by(user: user)
+        membership.assign_attributes(
           status: "active",
           role: "member",
           stripe_subscription_id: subscription.id,
-          subscription_end_date: subscription_end_date
+          stripe_subscription_end_date: subscription_end_date,
+          stripe_subscription_cancel_at_period_end: false
         )
+        membership.save!
 
         redirect_to @club, notice: "Payment successful! You have joined #{@club.name}."
       else

@@ -96,12 +96,7 @@ Rails.application.routes.draw do
   resources :payments, only: [ :index, :show ]
 
   # Subscription management
-  resources :subscriptions, only: [ :show ] do
-    member do
-      post :cancel
-      post :resume
-    end
-  end
+  resources :subscriptions, only: [ :destroy ], controller: "users/subscriptions"
 
   # User profiles
   resources :users, only: [ :show ], controller: "users/profiles" do

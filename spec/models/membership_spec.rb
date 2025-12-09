@@ -2,15 +2,16 @@
 #
 # Table name: memberships
 #
-#  id                     :bigint           not null, primary key
-#  role                   :string           default("member"), not null
-#  status                 :string           default("active"), not null
-#  subscription_end_date  :datetime
-#  created_at             :datetime         not null
-#  updated_at             :datetime         not null
-#  club_id                :bigint           not null
-#  stripe_subscription_id :string
-#  user_id                :bigint           not null
+#  id                                       :bigint           not null, primary key
+#  role                                     :string           default("member"), not null
+#  status                                   :string           default("active"), not null
+#  stripe_subscription_cancel_at_period_end :boolean
+#  stripe_subscription_end_date             :datetime
+#  created_at                               :datetime         not null
+#  updated_at                               :datetime         not null
+#  club_id                                  :bigint           not null
+#  stripe_subscription_id                   :string
+#  user_id                                  :bigint           not null
 #
 # Indexes
 #

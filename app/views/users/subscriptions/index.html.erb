@@ -21,6 +21,7 @@
 
   <!-- Subscriptions List -->
   <div class="mt-6">
+    <h2 class="text-2xl font-bold tracking-tight mb-4">Active Memberships</h2>
     <% if @paid_memberships.present? %>
       <div class="overflow-hidden bg-white shadow dark:bg-gray-800 sm:rounded-md">
         <ul role="list" class="divide-y divide-gray-200 dark:divide-gray-700">
@@ -34,7 +35,15 @@
                       <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
                         <%= link_to membership.club.name, club_path(membership.club), class: "text-orange-600 hover:text-orange-700 dark:text-orange-400 dark:hover:text-orange-300" %>
                       </p>
-                      <span class="inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700 dark:bg-green-900/50 dark:text-green-300">Active</span>
+                      <% if membership.stripe_subscription_cancel_at_period_end %>
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400">
+                          Ending soon
+                        </span>
+                      <% else %>
+                        <span class="inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700 dark:bg-green-900/50 dark:text-green-300">
+                          Active
+                        </span>
+                      <% end %>
                     </div>
                     <% if subscription_plan %>
                       <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">
@@ -51,8 +60,83 @@
                       </p>
                     <% end %>
                     <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Member since <%= membership.created_at.strftime("%B %d, %Y") %></p>
-                    <% if membership.subscription_end_date %>
-                      <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Next billing date: <%= membership.subscription_end_date.strftime("%B %d, %Y") %></p>
+                    <% if membership.stripe_subscription_end_date %>
+                      <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                        <% if membership.stripe_subscription_cancel_at_period_end %>
+                          Last day as member: <%= membership.stripe_subscription_end_date.strftime("%B %d, %Y") %>
+                        <% else %>
+                          Next billing date: <%= membership.stripe_subscription_end_date.strftime("%B %d, %Y") %>
+                        <% end %>
+                      </p>
+                    <% end %>
+                  </div>
+                </div>
+                <div class="ml-4">
+                  <% if membership.stripe_subscription_id.present? && !membership.stripe_subscription_cancel_at_period_end %>
+                    <%= button_to "Cancel", subscription_path(membership.id), method: :delete, class: "cursor-pointer inline-flex items-center rounded-md bg-red-600 px-3 py-2 text-sm font-medium text-white shadow hover:bg-red-700", data: { turbo_confirm: "Are you sure you want to cancel this subscription? This action CANNOT be undone and you'll have to subscribe to the Club again when your membership expires!" } %>
+                  <% end %>
+                </div>
+              </div>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    <% else %>
+      <div class="text-center py-12">
+        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+        </svg>
+        <h3 class="mt-2 text-sm font-semibold text-gray-900 dark:text-gray-100">No Active subscriptions</h3>
+        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">You don't have any paid club memberships active at this moment.</p>
+        <div class="mt-6">
+          <%= link_to "Explore Clubs", clubs_path, class: "inline-flex items-center rounded-md bg-orange-600 px-4 py-2 text-sm font-medium text-white shadow hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="mt-6">
+    <h2 class="text-2xl font-bold tracking-tight mb-4">Disabled/Past Memberships</h2>
+    <% if @disabled_memberships.present? %>
+      <div class="overflow-hidden bg-white shadow dark:bg-gray-800 sm:rounded-md">
+        <ul role="list" class="divide-y divide-gray-200 dark:divide-gray-700">
+          <% @disabled_memberships.each do |membership| %>
+            <% subscription_plan = membership.club.subscription_plans.active.first %>
+            <li class="px-4 py-4 sm:px-6">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center min-w-0 flex-1">
+                  <div class="min-w-0 flex-1">
+                    <div class="flex items-center gap-3">
+                      <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                        <%= link_to membership.club.name, club_path(membership.club), class: "text-orange-600 hover:text-orange-700 dark:text-orange-400 dark:hover:text-orange-300" %>
+                      </p>
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">
+                        Cancelled
+                      </span>
+                    </div>
+                    <% if subscription_plan %>
+                      <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">
+                        <%= subscription_plan.name %> -
+                        <span class="font-semibold">$<%= number_with_precision(subscription_plan.price_in_dollars, precision: 2) %></span>
+                        <span class="text-gray-500 dark:text-gray-400">/ <%= subscription_plan.plan_type %></span>
+                      </p>
+                      <% if subscription_plan.description.present? %>
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400"><%= subscription_plan.description %></p>
+                      <% end %>
+                    <% else %>
+                      <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">
+                        No active subscription plan
+                      </p>
+                    <% end %>
+                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Member since <%= membership.created_at.strftime("%B %d, %Y") %></p>
+                    <% if membership.stripe_subscription_end_date %>
+                      <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                        <% if membership.stripe_subscription_cancel_at_period_end %>
+                          Last day as member: <%= membership.stripe_subscription_end_date.strftime("%B %d, %Y") %>
+                        <% else %>
+                          Next billing date: <%= membership.stripe_subscription_end_date.strftime("%B %d, %Y") %>
+                        <% end %>
+                      </p>
                     <% end %>
                   </div>
                 </div>
