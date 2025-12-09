@@ -25,12 +25,29 @@
 #
 FactoryBot.define do
   factory :subscription_plan do
-    club { nil }
-    stripe_product_id { "MyString" }
-    plan_type { "MyString" }
-    price_cents { 1 }
-    currency { "MyString" }
-    description { "MyText" }
-    active { false }
+    association :club
+    name { "Standard Plan" }
+    stripe_product_id { "price_#{SecureRandom.hex(12)}" }
+    plan_type { "month" }
+    price_cents { 2000 }
+    currency { "cad" }
+    description { "A standard monthly subscription plan" }
+    active { true }
+
+    trait :weekly do
+      plan_type { "week" }
+      price_cents { 500 }
+      description { "A weekly subscription plan" }
+    end
+
+    trait :yearly do
+      plan_type { "year" }
+      price_cents { 20000 }
+      description { "An annual subscription plan" }
+    end
+
+    trait :inactive do
+      active { false }
+    end
   end
 end

@@ -51,6 +51,9 @@
                       </p>
                     <% end %>
                     <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Member since <%= membership.created_at.strftime("%B %d, %Y") %></p>
+                    <% if membership.subscription_end_date %>
+                      <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Next billing date: <%= membership.subscription_end_date.strftime("%B %d, %Y") %></p>
+                    <% end %>
                   </div>
                 </div>
               </div>

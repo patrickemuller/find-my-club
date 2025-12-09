@@ -210,7 +210,10 @@ Club.find_each do |club|
 
     # For paid clubs, add mock Stripe subscription ID to active memberships
     if club.paid && membership.active? && membership.stripe_subscription_id.blank?
-      membership.update(stripe_subscription_id: "sub_#{SecureRandom.hex(12)}")
+      membership.update(
+        stripe_subscription_id: "sub_#{SecureRandom.hex(12)}",
+        subscription_end_date: rand(1..30).days.from_now
+      )
 
       # Create 1-3 mock invoices for each active membership in paid clubs
       invoice_count = rand(1..3)

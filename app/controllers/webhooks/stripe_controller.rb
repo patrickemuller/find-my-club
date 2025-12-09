@@ -52,6 +52,13 @@ class Webhooks::StripeController < ApplicationController
     Rails.logger.info "Current Period End: #{Time.at(subscription.current_period_end)}"
     Rails.logger.info "Cancel At Period End: #{subscription.cancel_at_period_end}"
     Rails.logger.info "==============================================="
+
+    # Find the membership via subscription ID and update renewal date
+    membership = Membership.find_by(stripe_subscription_id: subscription.id)
+    if membership
+      membership.update(subscription_end_date: Time.at(subscription.current_period_end))
+      Rails.logger.info "Updated membership #{membership.id} with renewal date: #{Time.at(subscription.current_period_end)}"
+    end
   end
 
   def handle_subscription_deleted(event)
