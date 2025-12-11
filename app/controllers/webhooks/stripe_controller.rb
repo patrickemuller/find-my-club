@@ -18,7 +18,7 @@ class Webhooks::StripeController < ApplicationController
         handle_subscription_updated(event)
       when "customer.subscription.deleted"
         handle_subscription_deleted(event)
-      when "invoice.paid"
+      when "invoice.payment_succeeded"
         handle_invoice_paid(event)
       when "invoice.payment_failed"
         handle_invoice_payment_failed(event)
@@ -87,6 +87,9 @@ class Webhooks::StripeController < ApplicationController
     end
   end
 
+  # When user subscribe to a Paid Club, the invoice webhook is actually received BEFORE the success callback is called
+  # which prevents the invoice from being created, since the line 106 won't find a membership yet
+  # This webhook will only work when the subscription renews and a new invoice is generated
   def handle_invoice_paid(event)
     invoice = event.data.object
     Rails.logger.info "===== STRIPE WEBHOOK: Invoice Paid ====="

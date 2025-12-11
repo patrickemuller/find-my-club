@@ -140,7 +140,29 @@ class Clubs::StripeAccountsController < ApplicationController
           stripe_subscription_end_date: subscription_end_date,
           stripe_subscription_cancel_at_period_end: false
         )
+
         membership.save!
+
+        # The invoice should be created here instead of using Webhooks because at the time of the Checkout success
+        # The subscription doesn't exist yet, which means the webhook won't find a membership to associate the invoice with
+        invoice = Stripe::Invoice.retrieve(
+          { id: subscription.latest_invoice },
+          { stripe_account: @club.stripe_account_id }
+        )
+
+        inv = Invoice.find_or_initialize_by(stripe_invoice_id: invoice.id)
+        inv.user = membership.user
+        inv.stripe_subscription_id = invoice.subscription
+        inv.club_name = membership.club.name
+        inv.amount_cents = invoice.amount_paid
+        inv.currency = invoice.currency
+        inv.status = "paid"
+        inv.invoice_number = invoice.number
+        inv.invoice_pdf_url = invoice.invoice_pdf
+        inv.period_start = Time.at(invoice.period_start) if invoice.period_start
+        inv.period_end = Time.at(invoice.period_end) if invoice.period_end
+        inv.paid_at = Time.current
+        inv.save
 
         redirect_to @club, notice: "Payment successful! You have joined #{@club.name}."
       else

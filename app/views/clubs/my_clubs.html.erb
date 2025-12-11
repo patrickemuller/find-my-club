@@ -92,7 +92,7 @@
               <%= link_to "View", club_path(club), class: "inline-flex items-center rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-900 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-100 hover:dark:bg-gray-700" %>
               <%= link_to "Events", club_events_path(club), class: "inline-flex items-center rounded-md border border-purple-300 bg-purple-50 px-3 py-1.5 text-sm font-medium text-purple-800 hover:bg-purple-500 hover:text-white dark:border-purple-600 dark:bg-purple-900/30 dark:text-purple-300" %>
               <%= button_to "Leave", club_membership_path(club), method: :delete,
-                  data: { turbo_confirm: "Are you sure you want to leave #{club.name}? You'll lose access to all club information and events." },
+                  data: { turbo_confirm: "Are you sure you want to leave #{club.name}? You'll lose access to all club information and events, any paid subscription will be lost and you'll have to pay again to join (if applicable)." },
                   class: "cursor-pointer inline-flex items-center rounded-md bg-red-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-red-700" %>
             <% end %>
           </div>
@@ -138,7 +138,7 @@
                 <%= link_to "Events", club_events_path(club), class: "inline-flex items-center rounded-md border border-purple-300 bg-purple-50 px-3 py-1.5 text-sm font-medium text-purple-800 hover:bg-purple-500 hover:text-white dark:border-purple-600 dark:bg-purple-900/30 dark:text-purple-300" %>
               <% end %>
               <%= button_to "Leave", club_membership_path(club), method: :delete,
-                  data: { turbo_confirm: "Are you sure you want to leave #{club.name}? You'll lose access to all club information and events." },
+                  data: { turbo_confirm: "Are you sure you want to leave #{club.name}? You'll lose access to all club information and events, any paid subscription will be lost and you'll have to pay again to join (if applicable)." },
                   class: "cursor-pointer inline-flex items-center rounded-md bg-red-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-red-700" %>
             </div>
           </div>

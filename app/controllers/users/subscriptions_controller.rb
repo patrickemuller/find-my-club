@@ -13,6 +13,8 @@ class Users::SubscriptionsController < ApplicationController
 
     @disabled_memberships = current_user.memberships
                                         .disabled
+                                        .joins(club: :subscription_plans)
+                                        .where(clubs: { paid: true })
                                         .includes(club: :subscription_plans)
                                         .distinct
 
