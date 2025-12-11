@@ -89,9 +89,7 @@
         </div>
 
         <!-- Prevent displaying Stripe information in Production -->
-        <% if Rails.env.development? %>
-          <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">Account ID: <code class="font-mono"><%= @club.stripe_account_id %></code></p>
-        <% end %>
+        <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">Account ID: <code class="font-mono"><%= link_to @club.stripe_account_id, "https://dashboard.stripe.com/#{@club.stripe_account_id}/dashboard", target: "_blank", class: "cursor-pointer underline text-indigo-600" %></code></p>
 
         <%= button_to club_payments_path(@club), method: :delete, data: { turbo_confirm: "Are you sure? This will prevent you from accepting new subscriptions. It can also create problems with current subscriptions from your members." }, class: "cursor-pointer text-sm text-red-600 dark:text-red-400 hover:underline" do %>
           Disconnect Stripe Account
