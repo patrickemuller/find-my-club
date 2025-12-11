@@ -90,7 +90,7 @@ RSpec.describe "Webhooks::Stripe", type: :request do
         end
       end
 
-      context "when receiving invoice.paid event" do
+      context "when receiving invoice.payment_succeeded event" do
         let(:user) { create(:user) }
         let(:club) { create(:club, name: "Test Running Club") }
         let(:membership) { create(:membership, user: user, club: club, status: :active, stripe_subscription_id: "sub_123456789") }
@@ -98,7 +98,7 @@ RSpec.describe "Webhooks::Stripe", type: :request do
         let(:webhook_payload) do
           {
             id: "evt_test_webhook",
-            type: "invoice.paid",
+            type: "invoice.payment_succeeded",
             data: {
               object: {
                 id: "in_123456789",
@@ -171,7 +171,7 @@ RSpec.describe "Webhooks::Stripe", type: :request do
           let(:webhook_payload) do
             {
               id: "evt_test_webhook",
-              type: "invoice.paid",
+              type: "invoice.payment_succeeded",
               data: {
                 object: {
                   id: "in_999999999",

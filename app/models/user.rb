@@ -82,7 +82,7 @@ class User < ApplicationRecord
 
   def can_join?(club)
     return false if club.owner == self  # Owner can't join their own club
-    return false if memberships.exists?(club_id: club.id, status: "active")  # Already has a membership (any status)
+    return false if memberships.exists?(club_id: club.id, status: %w[active pending])  # Already has a membership (either active or pending)
     true
   end
 

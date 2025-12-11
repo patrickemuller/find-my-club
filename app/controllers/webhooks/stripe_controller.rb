@@ -120,6 +120,8 @@ class Webhooks::StripeController < ApplicationController
     inv.period_end = Time.at(invoice.period_end) if invoice.period_end
     inv.paid_at = Time.current
     inv.save
+  rescue => e
+    Rails.logger.error(e.message)
   end
 
   def handle_invoice_payment_failed(event)
