@@ -11,6 +11,7 @@
 #  name             :string           not null
 #  slug             :string
 #  starts_at        :datetime         not null
+#  string           :string           not null
 #  created_at       :datetime         not null
 #  updated_at       :datetime         not null
 #  club_id          :bigint           not null
