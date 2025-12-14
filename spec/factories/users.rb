@@ -16,6 +16,7 @@
 #  confirmation_sent_at   :datetime
 #  confirmation_token     :string
 #  confirmed_at           :datetime
+#  country_code           :string
 #  current_sign_in_at     :datetime
 #  current_sign_in_ip     :string
 #  email                  :string           default(""), not null
@@ -25,6 +26,7 @@
 #  last_sign_in_at        :datetime
 #  last_sign_in_ip        :string
 #  outside_url            :string
+#  phone_number           :string
 #  remember_created_at    :datetime
 #  reset_password_sent_at :datetime
 #  reset_password_token   :string
@@ -52,6 +54,10 @@ FactoryBot.define do
     # Devise :confirmable — mark users confirmed by default for convenience in tests
     confirmed_at { Time.current }
 
+    # Phone number and country code
+    country_code { 'us' }
+    sequence(:phone_number) { |n| "+1415555#{format('%04d', n % 10000)}" }
+
     # Social media URLs - randomly assigned to ~60% of users
     strava_url { [ nil, nil, "https://www.strava.com/athletes/#{rand(1000000..9999999)}" ].sample }
     trailforks_url { [ nil, nil, "https://www.trailforks.com/profile/user#{rand(1000..9999)}/" ].sample }
@@ -78,6 +84,16 @@ FactoryBot.define do
       trailforks_url { nil }
       outside_url { nil }
       athlinks_url { nil }
+    end
+
+    trait :with_avatar do
+      after(:build) do |user|
+        user.avatar.attach(
+          io: File.open(Rails.root.join('app', 'assets', 'images', 'avatar-example.png')),
+          filename: 'avatar.png',
+          content_type: 'image/png'
+        )
+      end
     end
   end
 end

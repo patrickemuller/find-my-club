@@ -24,6 +24,8 @@ This document provides a breakdown of the database structure for the Find My Clu
 - `encrypted_password` (string, required) - Hashed password
 - `first_name` (string, required) - User's first name
 - `last_name` (string, required) - User's last name
+- `phone_number` (string, required) - Phone number in E.164 format
+- `country_code` (string, required) - ISO country code for phone validation
 - `admin` (boolean, default: false) - Admin flag
 - `strava_url` (string) - Strava profile URL
 - `trailforks_url` (string) - TrailForks profile URL

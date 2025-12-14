@@ -8,6 +8,7 @@
 #  confirmation_sent_at   :datetime
 #  confirmation_token     :string
 #  confirmed_at           :datetime
+#  country_code           :string
 #  current_sign_in_at     :datetime
 #  current_sign_in_ip     :string
 #  email                  :string           default(""), not null
@@ -17,6 +18,7 @@
 #  last_sign_in_at        :datetime
 #  last_sign_in_ip        :string
 #  outside_url            :string
+#  phone_number           :string
 #  remember_created_at    :datetime
 #  reset_password_sent_at :datetime
 #  reset_password_token   :string
@@ -34,6 +36,8 @@
 #  index_users_on_reset_password_token  (reset_password_token) UNIQUE
 #
 class User < ApplicationRecord
+  include ActionView::Helpers::NumberHelper
+
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
@@ -41,6 +45,14 @@ class User < ApplicationRecord
          :confirmable, :trackable
 
   validates :first_name, :last_name, presence: true
+  validates :phone_number, :country_code, presence: true
+
+  # Avatar attachment
+  has_one_attached :avatar
+  validate :validate_avatar
+
+  # Phone number validation
+  validate :validate_phone_number_format
 
   # Social media URL validations
   validates :strava_url,
@@ -113,7 +125,37 @@ class User < ApplicationRecord
     athlinks_url.match(%r{/athletes/(.+?)(?:/|$)})&.[](1)
   end
 
+  def formatted_phone_number
+    return nil unless phone_number.present? && country_code.present?
+    parsed = Phonelib.parse(phone_number, country_code)
+    parsed.valid? ? parsed.international : phone_number
+  end
+
   private
+
+  def validate_avatar
+    return unless avatar.attached?
+
+    # Validate content type
+    unless avatar.content_type.in?(%w[image/jpeg image/png image/gif image/webp])
+      errors.add(:avatar, "must be an image file")
+    end
+
+    # Validate file size
+    if avatar.byte_size > 10.megabytes
+      current_size = number_to_human_size(avatar.byte_size)
+      errors.add(:avatar, "file size must be less than 10 MB, your file is #{current_size}")
+    end
+  end
+
+  def validate_phone_number_format
+    return if phone_number.blank? || country_code.blank?
+
+    parsed = Phonelib.parse(phone_number, country_code)
+    unless parsed.valid?
+      errors.add(:phone_number, "is invalid for selected country")
+    end
+  end
 
   def validate_social_media_urls
     validate_parsed_url(:strava_url, "www.strava.com")

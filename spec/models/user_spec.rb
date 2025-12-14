@@ -8,6 +8,7 @@
 #  confirmation_sent_at   :datetime
 #  confirmation_token     :string
 #  confirmed_at           :datetime
+#  country_code           :string
 #  current_sign_in_at     :datetime
 #  current_sign_in_ip     :string
 #  email                  :string           default(""), not null
@@ -17,6 +18,7 @@
 #  last_sign_in_at        :datetime
 #  last_sign_in_ip        :string
 #  outside_url            :string
+#  phone_number           :string
 #  remember_created_at    :datetime
 #  reset_password_sent_at :datetime
 #  reset_password_token   :string
@@ -215,6 +217,93 @@ RSpec.describe User, type: :model do
     it "has trackable module" do
       expect(user).to respond_to(:current_sign_in_at)
       expect(user).to respond_to(:sign_in_count)
+    end
+  end
+
+  describe "avatar validations" do
+    let(:user) { build(:user) }
+
+    it "avatar can be a valid 256x256px image under 10MB" do
+      user.avatar.attach(
+        io: File.open(Rails.root.join('app', 'assets', 'images', 'avatar-example.png')),
+        filename: 'avatar.png',
+        content_type: 'image/png'
+      )
+      user.save
+      expect(user).to be_valid
+    end
+
+    it "avatar must be an image" do
+      # Create a fake PDF file
+      pdf_data = "%PDF-1.4\n1 0 obj\n<<>>\nendobj\n"
+      user.avatar.attach(
+        io: StringIO.new(pdf_data),
+        filename: 'document.pdf',
+        content_type: 'application/pdf'
+      )
+      expect(user).not_to be_valid
+      expect(user.errors[:avatar]).to include("must be an image file")
+    end
+
+    it "avatar must be under 10MB" do
+      # Create a file larger than 10MB (simulate by setting byte_size)
+      large_image_data = "PNG" * 1000
+      user.avatar.attach(
+        io: StringIO.new(large_image_data),
+        filename: 'large.png',
+        content_type: 'image/png'
+      )
+      # Mock the byte_size to be over 10MB
+      allow(user.avatar).to receive(:byte_size).and_return(11.megabytes)
+      expect(user).not_to be_valid
+      expect(user.errors[:avatar]).to include("file size must be less than 10 MB, your file is 11 MB")
+    end
+  end
+
+  describe "phone number validations" do
+    let(:user) { build(:user) }
+
+    it "requires phone_number" do
+      user.phone_number = nil
+      expect(user).not_to be_valid
+      expect(user.errors[:phone_number]).to include("can't be blank")
+    end
+
+    it "requires country_code" do
+      user.country_code = nil
+      expect(user).not_to be_valid
+      expect(user.errors[:country_code]).to include("can't be blank")
+    end
+
+    it "validates phone number format for selected country" do
+      user.country_code = 'us'
+      user.phone_number = '123' # Invalid US phone
+      expect(user).not_to be_valid
+      expect(user.errors[:phone_number]).to include("is invalid for selected country")
+    end
+
+    it "accepts valid phone number for selected country" do
+      user.country_code = 'us'
+      user.phone_number = '+14155551234'
+      expect(user).to be_valid
+    end
+  end
+
+  describe "#formatted_phone_number" do
+    let(:user) { build(:user, country_code: 'us', phone_number: '+14155551234') }
+
+    it "returns formatted phone number" do
+      expect(user.formatted_phone_number).to eq("+1 415-555-1234")
+    end
+
+    it "returns nil when phone_number is blank" do
+      user.phone_number = nil
+      expect(user.formatted_phone_number).to be_nil
+    end
+
+    it "returns nil when country_code is blank" do
+      user.country_code = nil
+      expect(user.formatted_phone_number).to be_nil
     end
   end
 
