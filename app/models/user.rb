@@ -131,6 +131,10 @@ class User < ApplicationRecord
     parsed.valid? ? parsed.international : phone_number
   end
 
+  def avatar_with_fallback
+    avatar&.variant(resize_to_limit: [ 256, 256 ]) || "https://picsum.photos/seed/#{id}-profile-picture/256/256"
+  end
+
   private
 
   def validate_avatar
