@@ -72,6 +72,9 @@ class User < ApplicationRecord
   has_many :received_invitations, class_name: "ClubInvitation", foreign_key: :user_id
   has_many :pending_club_invitations, -> { pending }, class_name: "ClubInvitation", primary_key: :email, foreign_key: :email
 
+  # Invoices
+  has_many :invoices, dependent: :destroy
+
   # Helper methods
   def member_of?(club)
     memberships.active.exists?(club_id: club.id)
@@ -79,7 +82,7 @@ class User < ApplicationRecord
 
   def can_join?(club)
     return false if club.owner == self  # Owner can't join their own club
-    return false if memberships.exists?(club_id: club.id)  # Already has a membership (any status)
+    return false if memberships.exists?(club_id: club.id, status: %w[active pending])  # Already has a membership (either active or pending)
     true
   end
 

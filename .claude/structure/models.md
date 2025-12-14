@@ -189,6 +189,42 @@ This document provides a breakdown of all models in the Find My Club application
 
 ---
 
+### Invoice
+**File:** `app/models/invoice.rb`
+**Table:** `invoices`
+
+**Description:** Stores payment invoice records from Stripe webhooks.
+
+**Key Attributes:**
+- `user_id` - Reference to User
+- `stripe_invoice_id` - Stripe invoice ID (unique)
+- `stripe_subscription_id` - Stripe subscription ID
+- `club_name` - Snapshot of club name at payment time
+- `amount_cents` - Payment amount in cents
+- `currency` - Currency code
+- `status` - Invoice status
+- `invoice_number` - Stripe invoice number
+- `invoice_pdf_url` - URL to downloadable PDF
+- `period_start` - Billing period start
+- `period_end` - Billing period end
+- `paid_at` - Payment timestamp
+
+**Associations:**
+- `belongs_to :user`
+
+**Key Methods:**
+- `amount_in_dollars` - Returns amount in dollars
+
+**Validations:**
+- Required: stripe_invoice_id (unique), club_name, amount_cents, currency, status
+
+**Notes:**
+- Stores immutable snapshot of payment data
+- Club name copied at invoice creation time
+- Created automatically via Stripe webhooks
+
+---
+
 ## Support Models
 
 ### ApplicationRecord
@@ -250,7 +286,8 @@ User
 ├── owns many Clubs (as owner)
 ├── has many Memberships
 │   └── through: clubs_as_member
-└── has many EventRegistrations
+├── has many EventRegistrations
+└── has many Invoices
 
 Club
 ├── belongs to owner (User)

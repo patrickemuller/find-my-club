@@ -80,10 +80,17 @@
                         <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
                           <%= membership.user.first_name %> <%= membership.user.last_name %>
                         </p>
-                        <span class="inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700 dark:bg-green-900/50 dark:text-green-300">Active</span>
+                        <% if membership.stripe_subscription_cancel_at_period_end %>
+                          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400">Ending soon</span>
+                        <% else %>
+                          <span class="inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700 dark:bg-green-900/50 dark:text-green-300">Active</span>
+                        <% end %>
                       </div>
                       <p class="mt-1 text-sm text-gray-600 dark:text-gray-300"><%= membership.user.email %></p>
                       <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Member for <%= time_ago_in_words(membership.created_at) %></p>
+                      <% if membership.stripe_subscription_cancel_at_period_end %>
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Last day as member: <%= membership.stripe_subscription_end_date.strftime("%B %d, %Y") %></p>
+                      <% end %>
                     </div>
                   </div>
                   <div class="ml-4 flex flex-shrink-0 gap-2">
@@ -135,7 +142,7 @@
                         class: "inline-flex items-center rounded-md bg-green-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-green-700" %>
                     <%= button_to "Reject", club_membership_path(@club), method: :delete, params: { membership_id: membership.id },
                         data: { turbo_confirm: "Are you sure you want to reject #{membership.user.first_name}'s request?" },
-                        class: "inline-flex items-center rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-900 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-100 dark:hover:bg-gray-700" %>
+                        class: "inline-flex items-center rounded-md bg-red-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-red-700" %>
                   </div>
                 </div>
               </li>

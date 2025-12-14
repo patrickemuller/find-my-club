@@ -1,0 +1,220 @@
+<% content_for :title, "My Subscriptions" %>
+
+<div class="w-full md:mt-8">
+  <!-- Page header -->
+  <div class="w-full">
+    <div class="w-full">
+      <%= render partial: 'shared/breadcrumbs', locals: {
+        links_and_text: [
+          [root_path, "Home"], [subscriptions_users_path, "My Subscriptions"]
+        ]
+      } %>
+    </div>
+
+    <div class="w-full flex mt-4 justify-between items-center">
+      <div class="col-span-4 lg:col-span-3 mb-4">
+        <h1 class="text-3xl font-bold tracking-tight">My Subscriptions</h1>
+        <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Manage your paid club memberships</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Subscriptions List -->
+  <div class="mt-6">
+    <h2 class="text-2xl font-bold tracking-tight mb-4">Active Memberships</h2>
+    <% if @paid_memberships.present? %>
+      <div class="overflow-hidden bg-white shadow dark:bg-gray-800 sm:rounded-md">
+        <ul role="list" class="divide-y divide-gray-200 dark:divide-gray-700">
+          <% @paid_memberships.each do |membership| %>
+            <% subscription_plan = membership.club.subscription_plans.active.first %>
+            <li class="px-4 py-4 sm:px-6">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center min-w-0 flex-1">
+                  <div class="min-w-0 flex-1">
+                    <div class="flex items-center gap-3">
+                      <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                        <%= link_to membership.club.name, club_path(membership.club), class: "text-orange-600 hover:text-orange-700 dark:text-orange-400 dark:hover:text-orange-300" %>
+                      </p>
+                      <% if membership.stripe_subscription_cancel_at_period_end %>
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400">
+                          Ending soon
+                        </span>
+                      <% else %>
+                        <span class="inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700 dark:bg-green-900/50 dark:text-green-300">
+                          Active
+                        </span>
+                      <% end %>
+                    </div>
+                    <% if subscription_plan %>
+                      <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">
+                        <%= subscription_plan.name %> -
+                        <span class="font-semibold">$<%= number_with_precision(subscription_plan.price_in_dollars, precision: 2) %></span>
+                        <span class="text-gray-500 dark:text-gray-400">/ <%= subscription_plan.plan_type %></span>
+                      </p>
+                      <% if subscription_plan.description.present? %>
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400"><%= subscription_plan.description %></p>
+                      <% end %>
+                    <% else %>
+                      <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">
+                        No active subscription plan
+                      </p>
+                    <% end %>
+                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Member since <%= membership.created_at.strftime("%B %d, %Y") %></p>
+                    <% if membership.stripe_subscription_end_date %>
+                      <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                        <% if membership.stripe_subscription_cancel_at_period_end %>
+                          Last day as member: <%= membership.stripe_subscription_end_date.strftime("%B %d, %Y") %>
+                        <% else %>
+                          Next billing date: <%= membership.stripe_subscription_end_date.strftime("%B %d, %Y") %>
+                        <% end %>
+                      </p>
+                    <% end %>
+                  </div>
+                </div>
+                <div class="ml-4">
+                  <% if membership.stripe_subscription_id.present? && !membership.stripe_subscription_cancel_at_period_end %>
+                    <%= button_to "Cancel", subscription_path(membership.id), method: :delete, class: "cursor-pointer inline-flex items-center rounded-md bg-red-600 px-3 py-2 text-sm font-medium text-white shadow hover:bg-red-700", data: { turbo_confirm: "Are you sure you want to cancel this subscription? This action CANNOT be undone and you'll have to subscribe to the Club again when your membership expires!" } %>
+                  <% end %>
+                </div>
+              </div>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    <% else %>
+      <div class="text-center py-12">
+        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+        </svg>
+        <h3 class="mt-2 text-sm font-semibold text-gray-900 dark:text-gray-100">No Active subscriptions</h3>
+        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">You don't have any paid club memberships active at this moment.</p>
+        <div class="mt-6">
+          <%= link_to "Explore Clubs", clubs_path, class: "inline-flex items-center rounded-md bg-orange-600 px-4 py-2 text-sm font-medium text-white shadow hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="mt-6">
+    <h2 class="text-2xl font-bold tracking-tight mb-4">Disabled or Cancelled Memberships</h2>
+    <% if @disabled_memberships.present? %>
+      <div class="overflow-hidden bg-white shadow dark:bg-gray-800 sm:rounded-md">
+        <ul role="list" class="divide-y divide-gray-200 dark:divide-gray-700">
+          <% @disabled_memberships.each do |membership| %>
+            <% subscription_plan = membership.club.subscription_plans.active.first %>
+            <li class="px-4 py-4 sm:px-6">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center min-w-0 flex-1">
+                  <div class="min-w-0 flex-1">
+                    <div class="flex items-center gap-3">
+                      <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                        <%= link_to membership.club.name, club_path(membership.club), class: "text-orange-600 hover:text-orange-700 dark:text-orange-400 dark:hover:text-orange-300" %>
+                      </p>
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">
+                        Cancelled
+                      </span>
+                    </div>
+                    <% if subscription_plan %>
+                      <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">
+                        <%= subscription_plan.name %> -
+                        <span class="font-semibold">$<%= number_with_precision(subscription_plan.price_in_dollars, precision: 2) %></span>
+                        <span class="text-gray-500 dark:text-gray-400">/ <%= subscription_plan.plan_type %></span>
+                      </p>
+                      <% if subscription_plan.description.present? %>
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400"><%= subscription_plan.description %></p>
+                      <% end %>
+                    <% else %>
+                      <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">
+                        No active subscription plan
+                      </p>
+                    <% end %>
+                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Member since <%= membership.created_at.strftime("%B %d, %Y") %></p>
+                    <% if membership.stripe_subscription_end_date %>
+                      <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                        <% if membership.stripe_subscription_cancel_at_period_end %>
+                          Last day as member: <%= membership.stripe_subscription_end_date.strftime("%B %d, %Y") %>
+                        <% else %>
+                          Next billing date: <%= membership.stripe_subscription_end_date.strftime("%B %d, %Y") %>
+                        <% end %>
+                      </p>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    <% else %>
+      <div class="text-center py-12">
+        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+        </svg>
+        <h3 class="mt-2 text-sm font-semibold text-gray-900 dark:text-gray-100">No subscriptions</h3>
+        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">You don't have any paid club memberships yet.</p>
+        <div class="mt-6">
+          <%= link_to "Explore Clubs", clubs_path, class: "inline-flex items-center rounded-md bg-orange-600 px-4 py-2 text-sm font-medium text-white shadow hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Invoices Table -->
+  <div class="mt-8">
+    <h2 class="text-2xl font-bold tracking-tight mb-4">Payment History</h2>
+    <% if @invoices.present? %>
+      <div class="overflow-hidden bg-white shadow dark:bg-gray-800 sm:rounded-md">
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+          <thead class="bg-gray-50 dark:bg-gray-900">
+            <tr>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Invoice #</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Club</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Amount</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Date</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Action</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+            <% @invoices.each do |invoice| %>
+              <tr>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
+                  <%= invoice.invoice_number || invoice.id %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                  <%= invoice.club_name %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                  $<%= number_with_precision(invoice.amount_in_dollars, precision: 2) %> <%= invoice.currency.upcase %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700 dark:bg-green-900/50 dark:text-green-300">
+                    <%= invoice.status.titleize %>
+                  </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                  <%= invoice.paid_at&.strftime("%b %d, %Y") || invoice.created_at.strftime("%b %d, %Y") %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                  <% if invoice.invoice_pdf_url.present? %>
+                    <%= link_to "Download", invoice.invoice_pdf_url, target: "_blank", class: "inline-flex items-center rounded-md bg-orange-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-orange-700" %>
+                  <% else %>
+                    <span class="text-gray-400 dark:text-gray-500">N/A</span>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <div class="text-center py-12 bg-white shadow dark:bg-gray-800 sm:rounded-md">
+        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+        <h3 class="mt-2 text-sm font-semibold text-gray-900 dark:text-gray-100">No invoices</h3>
+        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">You don't have any payment history yet.</p>
+      </div>
+    <% end %>
+  </div>
+</div>

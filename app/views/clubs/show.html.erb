@@ -33,19 +33,30 @@
           <% membership = current_user.memberships.find_by(club_id: @club.id) %>
           <% if membership&.active? %>
             <%= button_to "Leave", club_membership_path(@club), method: :delete,
-                data: { turbo_confirm: "Are you sure you want to leave #{@club.name}?" },
+                data: { turbo_confirm: "Are you sure you want to leave #{@club.name}? You'll lose access to all club information and events, any paid subscription will be lost and you'll have to pay again to join (if applicable)." },
                 class: "inline-flex items-center rounded-md bg-red-600 px-6 py-2.5 text-lg font-semibold text-white shadow hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2" %>
           <% elsif membership&.pending? %>
             <span class="inline-flex items-center rounded-md bg-yellow-600 px-6 py-2.5 text-lg font-semibold text-white shadow cursor-not-allowed">
               Pending Approval
             </span>
           <% elsif membership&.disabled? %>
-            <span class="inline-flex items-center rounded-md bg-gray-600 px-6 py-2.5 text-lg font-semibold text-white shadow cursor-not-allowed">
-              Membership Disabled
-            </span>
+            <% if @club.paid? %>
+              <span class="inline-flex items-center rounded-md bg-gray-600 px-6 py-2.5 text-lg font-semibold text-white shadow cursor-pointer">
+                <%= link_to "Reactivate Membership", club_checkout_path(@club) %>
+              </span>
+            <% else %>
+              <span class="inline-flex items-center rounded-md bg-gray-600 px-6 py-2.5 text-lg font-semibold text-white shadow cursor-not-allowed">
+                Membership Disabled
+              </span>
+            <% end %>
           <% else %>
-            <%= button_to "#{@club.private? ? 'Ask to Join' : 'Join'}", club_membership_path(@club), method: :post,
-                class: "inline-flex items-center rounded-md bg-orange-600 px-6 py-2.5 text-lg font-semibold text-white shadow hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2" %>
+            <% if @club.paid? %>
+              <%= link_to "Join Club", club_checkout_path(@club),
+                  class: "inline-flex items-center rounded-md bg-orange-600 px-6 py-2.5 text-lg font-semibold text-white shadow hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2" %>
+            <% else %>
+              <%= button_to "#{@club.private? ? 'Ask to Join' : 'Join Club'}", club_membership_path(@club), method: :post,
+                  class: "inline-flex items-center rounded-md bg-orange-600 px-6 py-2.5 text-lg font-semibold text-white shadow hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2" %>
+            <% end %>
           <% end %>
         <% else %>
           <%= link_to "Sign in to Join", new_user_session_path, class: "inline-flex items-center rounded-md bg-orange-600 px-6 py-2.5 text-lg font-semibold text-white shadow hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2" %>

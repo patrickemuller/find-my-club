@@ -2,13 +2,16 @@
 #
 # Table name: memberships
 #
-#  id         :bigint           not null, primary key
-#  role       :string           default("member"), not null
-#  status     :string           default("active"), not null
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#  club_id    :bigint           not null
-#  user_id    :bigint           not null
+#  id                                       :bigint           not null, primary key
+#  role                                     :string           default("member"), not null
+#  status                                   :string           default("active"), not null
+#  stripe_subscription_cancel_at_period_end :boolean
+#  stripe_subscription_end_date             :datetime
+#  created_at                               :datetime         not null
+#  updated_at                               :datetime         not null
+#  club_id                                  :bigint           not null
+#  stripe_subscription_id                   :string
+#  user_id                                  :bigint           not null
 #
 # Indexes
 #
@@ -26,6 +29,10 @@
 class Membership < ApplicationRecord
   belongs_to :user
   belongs_to :club
+
+  # stripe_subscription_end_date is the billing cycle day. This means:
+  # - If stripe_subscription_cancel_at_period_end is false: the subscription will renew on this date
+  # - If stripe_subscription_cancel_at_period_end is true: this will be the last day of the membership
 
   validates :user_id, :club_id, :status, :role, presence: true
   validates :user_id, uniqueness: { scope: :club_id, message: "is already a member of this club" }

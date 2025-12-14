@@ -1,0 +1,228 @@
+<div class="w-full mx-auto py-6">
+  <h1 class="text-3xl font-bold mb-6">Payment Setup</h1>
+
+  <!-- Setup Required Warning -->
+  <% if @club.incomplete_setup? %>
+    <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-6 mb-6">
+      <div class="flex items-start gap-3">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-yellow-600 dark:text-yellow-400 flex-shrink-0">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+        </svg>
+        <div>
+          <h3 class="font-semibold text-yellow-900 dark:text-yellow-100 mb-1">Setup Required</h3>
+          <p class="text-sm text-yellow-800 dark:text-yellow-200">
+            Your club is configured as paid but payment setup is incomplete. <strong>Your club will not be visible to members until you complete the setup below.</strong>
+          </p>
+          <p class="text-sm text-yellow-800 dark:text-yellow-200 mt-2">
+            Complete both steps: connect your Stripe account and create at least one subscription plan.
+          </p>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- Info Section -->
+  <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-6 mb-6">
+    <h3 class="font-semibold mb-2 text-blue-900 dark:text-blue-100">About Stripe Connect</h3>
+    <ul class="space-y-2 text-sm text-blue-800 dark:text-blue-200">
+      <li class="flex items-start gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 flex-shrink-0 mt-0.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+        </svg>
+        <span>You can manage deposit using your Stripe Account (create one <a href="https://dashboard.stripe.com/register" target="_blank"><b>HERE</b></a>)</span>
+      </li>
+      <li class="flex items-start gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 flex-shrink-0 mt-0.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+        </svg>
+        <span>Check <b><a href="https://stripe.com/en-ca/pricing" target="_blank" referrerpolicy="no-referrer" class="underline">Stripe pricing</a></b> before creating your account</span>
+      </li>
+      <li class="flex items-start gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 flex-shrink-0 mt-0.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+        </svg>
+        <span>Members can pay with credit cards, Apple Pay, Google Pay, or other payment methods</span>
+      </li>
+      <li class="flex items-start gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 flex-shrink-0 mt-0.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+        </svg>
+        <span>You have full control over their memberships and payments</span>
+      </li>
+      <li class="flex items-start gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 flex-shrink-0 mt-0.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+        </svg>
+        <span>Your members have access to invoices, can stop, and resume their memberships with just one click</span>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Step 1: Connect Stripe Account -->
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
+
+    <div class="flex items-center gap-3 mb-4">
+      <% if @club.stripe_account_id.present? %>
+        <div class="flex h-8 w-8 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-green-600 dark:text-green-400">
+            <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+          </svg>
+        </div>
+      <% else %>
+        <div class="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 dark:bg-gray-700">
+          <span class="text-sm font-semibold text-gray-600 dark:text-gray-300">1</span>
+        </div>
+      <% end %>
+      <h2 class="text-xl font-semibold">Connect Stripe Account</h2>
+    </div>
+
+    <% if @club.stripe_connected? %>
+      <div class="ml-11">
+        <div class="flex items-start gap-3 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg mb-4">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-green-600 dark:text-green-400 flex-shrink-0">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0 Z" />
+          </svg>
+          <div>
+            <p class="font-semibold text-green-900 dark:text-green-100">Connected & Ready</p>
+            <p class="text-sm text-green-700 dark:text-green-300">Your Stripe account is connected and ready to accept payments.</p>
+          </div>
+        </div>
+
+        <!-- Prevent displaying Stripe information in Production -->
+        <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">Account ID: <code class="font-mono"><%= link_to @club.stripe_account_id, "https://dashboard.stripe.com/#{@club.stripe_account_id}/dashboard", target: "_blank", class: "cursor-pointer underline text-indigo-600" %></code></p>
+
+        <%= button_to club_payments_path(@club), method: :delete, data: { turbo_confirm: "Are you sure? This will prevent you from accepting new subscriptions. It can also create problems with current subscriptions from your members." }, class: "cursor-pointer text-sm text-red-600 dark:text-red-400 hover:underline" do %>
+          Disconnect Stripe Account
+        <% end %>
+      </div>
+    <% elsif @club.stripe_account_id.present? %>
+      <div class="ml-11">
+        <div class="flex items-start gap-3 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg mb-4">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-yellow-600 dark:text-yellow-400 flex-shrink-0">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+          </svg>
+          <div>
+            <p class="font-semibold text-yellow-900 dark:text-yellow-100">Pending Setup</p>
+            <p class="text-sm text-yellow-700 dark:text-yellow-300">
+              Your Stripe account is connected but setup is incomplete.
+              This usually means you have not completed the necessary steps on Stripe to start receiving payments.
+              When you finish the process, RELOAD this page.
+            </p>
+          </div>
+        </div>
+        <%= button_to "Complete Stripe Setup", club_payments_path(@club), method: :post, class: "inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg" %>
+      </div>
+    <% else %>
+      <div class="ml-11">
+        <% if @club.incomplete_setup? %>
+          <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
+            <p class="mb-4">To accept payments for <%= @club.name %>, you need to connect a Stripe account.</p>
+
+            <p class="mb-6 text-gray-600 dark:text-gray-400">
+              Stripe will securely process payments from your members and deposit them directly to your bank account.
+            </p>
+
+            <%= button_to "Connect with Stripe", club_payments_path(@club), method: :post, data: { turbo: false }, class: "cursor-pointer bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg" %>
+          </div>
+
+          <div class="text-sm text-gray-600 dark:text-gray-400">
+            <p class="mb-2"><strong>What happens next?</strong></p>
+            <ul class="list-disc list-inside space-y-1">
+              <li>You'll be redirected to Stripe to create or connect an account</li>
+              <li>Provide basic business information</li>
+              <li>Once approved, you can start accepting payments</li>
+            </ul>
+          </div>
+        <% else %>
+          <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Connect your Stripe account to accept subscription payments from members.</p>
+          <%= link_to "Connect Stripe Account", new_club_payments_path(@club), class: "cursor-pointer inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg" %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Step 2: Configure Subscription Plans -->
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6<%= 'opacity-50' unless @club.stripe_connected? %>">
+    <div class="flex items-center gap-3 mb-4">
+      <% if @club.subscription_plans.any? %>
+        <div class="flex h-8 w-8 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-green-600 dark:text-green-400">
+            <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+          </svg>
+        </div>
+      <% else %>
+        <div class="flex h-8 w-8 items-center justify-center rounded-full <%= @club.stripe_connected? ? 'bg-gray-200 dark:bg-gray-700' : 'bg-gray-100 dark:bg-gray-800' %>">
+          <span class="text-sm font-semibold <%= @club.stripe_connected? ? 'text-gray-600 dark:text-gray-300' : 'text-gray-400 dark:text-gray-600' %>">2</span>
+        </div>
+      <% end %>
+      <h2 class="text-xl font-semibold">Configure Subscription Plans</h2>
+    </div>
+
+    <% if @club.stripe_connected? %>
+      <div class="ml-11">
+        <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Set up your subscription pricing (weekly, monthly, or yearly).</p>
+
+        <% if @club.subscription_plans.any? %>
+          <div class="space-y-4 mb-4 grid grid-cols-3 gap-2">
+            <% @club.subscription_plans.each do |plan| %>
+              <div class="bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-lg p-4 col-span-3 md:col-span-1">
+                <div class="flex justify-between items-start mb-2">
+                  <div>
+                    <h3 class="font-semibold"><%= plan.name.presence || plan.plan_type.capitalize %> Plan</h3>
+                    <p class="text-2xl font-bold mt-1">$<%= sprintf("%.2f", plan.price_in_dollars) %><span class="text-sm font-normal text-gray-600 dark:text-gray-400">/<%= plan.interval %></span></p>
+                  </div>
+                  <% if plan.active? %>
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-md font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
+                      Active
+                    </span>
+                  <% else %>
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-md font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">
+                      Inactive
+                    </span>
+                  <% end %>
+                </div>
+
+                <% if plan.description.present? %>
+                  <p class="text-gray-600 dark:text-gray-400 text-sm mb-3"><%= plan.description %></p>
+                <% end %>
+
+                <div class="flex justify-between items-center">
+                  <div class="text-xs text-gray-500 dark:text-gray-500">
+                    <!-- Prevent displaying Stripe information in Production -->
+                    <% if Rails.env.development? %>
+                      <p>Stripe Price ID: <code class="font-mono"><%= plan.stripe_product_id %></code></p>
+                    <% end %>
+
+                    <p>Created: <%= plan.created_at.strftime("%B %d, %Y") %></p>
+                  </div>
+                  <%= link_to "Edit", edit_club_subscription_plan_path(@club, plan), class: "text-indigo-600 dark:text-indigo-400 hover:underline text-sm" %>
+                </div>
+              </div>
+            <% end %>
+          </div>
+
+          <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-4 col-span-3">
+            <p class="text-sm text-blue-800 dark:text-blue-200">
+              <strong>Note:</strong> To modify prices, you'll need to create new plans. Existing subscriber prices will not change.
+            </p>
+          </div>
+        <% else %>
+          <div class="bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-lg p-6 text-center mb-4">
+            <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">No subscription plans yet.</p>
+            <p class="text-xs text-gray-500 dark:text-gray-500">Create subscription plans to start accepting member payments.</p>
+          </div>
+        <% end %>
+
+        <%= link_to "Create Plan", new_club_subscription_plan_path(@club), class: "inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg" %>
+      </div>
+    <% else %>
+      <div class="ml-11">
+        <p class="text-sm text-gray-500 dark:text-gray-500">Complete Step 1 to configure subscription plans.</p>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="mt-6">
+    <%= link_to "← Back to My Clubs", my_clubs_path, class: "text-indigo-600 dark:text-indigo-400 hover:underline" %>
+  </div>
+</div>

@@ -2,21 +2,26 @@
 #
 # Table name: clubs
 #
-#  id         :bigint           not null, primary key
-#  active     :boolean          default(TRUE)
-#  category   :string           not null
-#  level      :string           not null
-#  name       :string           not null
-#  public     :boolean          default(FALSE)
-#  slug       :string
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#  owner_id   :bigint           not null
+#  id                           :bigint           not null, primary key
+#  active                       :boolean          default(TRUE)
+#  category                     :string           not null
+#  level                        :string           not null
+#  name                         :string           not null
+#  paid                         :boolean          default(FALSE), not null
+#  public                       :boolean          default(FALSE)
+#  slug                         :string
+#  stripe_account_refresh_token :string
+#  stripe_account_status        :string
+#  created_at                   :datetime         not null
+#  updated_at                   :datetime         not null
+#  owner_id                     :bigint           not null
+#  stripe_account_id            :string
 #
 # Indexes
 #
-#  index_clubs_on_owner_id  (owner_id)
-#  index_clubs_on_slug      (slug) UNIQUE
+#  index_clubs_on_owner_id           (owner_id)
+#  index_clubs_on_slug               (slug) UNIQUE
+#  index_clubs_on_stripe_account_id  (stripe_account_id)
 #
 # Foreign Keys
 #

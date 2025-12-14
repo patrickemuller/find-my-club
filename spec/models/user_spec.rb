@@ -184,10 +184,10 @@ RSpec.describe User, type: :model do
       expect(user.can_join?(club)).to be false
     end
 
-    it "returns false when user has disabled membership" do
+    it "returns true when user has disabled membership" do
       user.save!
       create(:membership, :disabled, user: user, club: club)
-      expect(user.can_join?(club)).to be false
+      expect(user.can_join?(club)).to be true
     end
   end
 

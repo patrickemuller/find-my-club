@@ -3,8 +3,15 @@ class EventsController < ApplicationController
   before_action :set_club
   before_action :set_event, only: [ :show, :edit, :update, :destroy, :registrations ]
   before_action :authorize_owner!, only: [ :new, :create, :edit, :update, :destroy, :registrations ]
+  before_action :ensure_club_setup_complete!, only: [ :new, :create, :edit, :update, :destroy ]
 
   def index
+    # Only club members and owner can view events
+    unless current_user && (@club.has_member?(current_user) || @club.is_owner?(current_user))
+      redirect_to club_path(@club), alert: "Only active club members can view events"
+      return
+    end
+
     @upcoming_events = @club.events.upcoming
     @past_events = @club.events.past
     @events_json = @club.events.order(starts_at: :asc).map do |event|
@@ -18,9 +25,9 @@ class EventsController < ApplicationController
   end
 
   def show
-    # Accessible to club members and owner
+    # Only club members and owner can view events
     unless current_user && (@club.has_member?(current_user) || @club.is_owner?(current_user))
-      redirect_to club_path(@club), alert: "Only club members can view events"
+      redirect_to club_path(@club), alert: "Only active club members can view events"
       return
     end
 
@@ -76,6 +83,12 @@ class EventsController < ApplicationController
   def authorize_owner!
     unless @club.is_owner?(current_user)
       redirect_to club_path(@club), alert: "Only the club owner can manage events"
+    end
+  end
+
+  def ensure_club_setup_complete!
+    if @club.incomplete_setup?
+      redirect_to club_payments_path(@club), alert: "Please complete your Stripe setup before managing events"
     end
   end
 

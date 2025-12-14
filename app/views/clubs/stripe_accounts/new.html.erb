@@ -1,0 +1,22 @@
+<div class="max-w-2xl mx-auto p-6">
+  <h1 class="text-3xl font-bold mb-6">Connect Stripe Account</h1>
+
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
+    <p class="mb-4">To accept payments for <%= @club.name %>, you need to connect a Stripe account.</p>
+
+    <p class="mb-6 text-gray-600 dark:text-gray-400">
+      Stripe will securely process payments from your members and deposit them directly to your bank account.
+    </p>
+
+    <%= button_to "Connect with Stripe", club_payments_path(@club), method: :post, class: "bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg" %>
+  </div>
+
+  <div class="text-sm text-gray-600 dark:text-gray-400">
+    <p class="mb-2"><strong>What happens next?</strong></p>
+    <ul class="list-disc list-inside space-y-1">
+      <li>You'll be redirected to Stripe to create or connect an account</li>
+      <li>Provide basic business information</li>
+      <li>Once approved, you can start accepting payments</li>
+    </ul>
+  </div>
+</div>

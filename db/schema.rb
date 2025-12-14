@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_25_200409) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_09_182444) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -78,11 +78,16 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_25_200409) do
     t.string "level", null: false
     t.string "name", null: false
     t.bigint "owner_id", null: false
+    t.boolean "paid", default: false, null: false
     t.boolean "public", default: false
     t.string "slug"
+    t.string "stripe_account_id"
+    t.string "stripe_account_refresh_token"
+    t.string "stripe_account_status"
     t.datetime "updated_at", null: false
     t.index ["owner_id"], name: "index_clubs_on_owner_id"
     t.index ["slug"], name: "index_clubs_on_slug", unique: true
+    t.index ["stripe_account_id"], name: "index_clubs_on_stripe_account_id"
   end
 
   create_table "event_registrations", force: :cascade do |t|
@@ -123,11 +128,33 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_25_200409) do
     t.index ["sluggable_type", "sluggable_id"], name: "index_friendly_id_slugs_on_sluggable_type_and_sluggable_id"
   end
 
+  create_table "invoices", force: :cascade do |t|
+    t.integer "amount_cents", null: false
+    t.string "club_name", null: false
+    t.datetime "created_at", null: false
+    t.string "currency", null: false
+    t.string "invoice_number"
+    t.string "invoice_pdf_url"
+    t.datetime "paid_at"
+    t.datetime "period_end"
+    t.datetime "period_start"
+    t.string "status", null: false
+    t.string "stripe_invoice_id", null: false
+    t.string "stripe_subscription_id"
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["stripe_invoice_id"], name: "index_invoices_on_stripe_invoice_id", unique: true
+    t.index ["user_id"], name: "index_invoices_on_user_id"
+  end
+
   create_table "memberships", force: :cascade do |t|
     t.bigint "club_id", null: false
     t.datetime "created_at", null: false
     t.string "role", default: "member", null: false
     t.string "status", default: "active", null: false
+    t.boolean "stripe_subscription_cancel_at_period_end"
+    t.datetime "stripe_subscription_end_date"
+    t.string "stripe_subscription_id"
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.index ["club_id"], name: "index_memberships_on_club_id"
@@ -135,6 +162,27 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_25_200409) do
     t.index ["status"], name: "index_memberships_on_status"
     t.index ["user_id", "club_id"], name: "index_memberships_on_user_id_and_club_id", unique: true
     t.index ["user_id"], name: "index_memberships_on_user_id"
+  end
+
+  create_table "solid_cable_messages", force: :cascade do |t|
+    t.binary "channel", null: false
+    t.bigint "channel_hash", null: false
+    t.datetime "created_at", null: false
+    t.binary "payload", null: false
+    t.index ["channel"], name: "index_solid_cable_messages_on_channel"
+    t.index ["channel_hash"], name: "index_solid_cable_messages_on_channel_hash"
+    t.index ["created_at"], name: "index_solid_cable_messages_on_created_at"
+  end
+
+  create_table "solid_cache_entries", force: :cascade do |t|
+    t.integer "byte_size", null: false
+    t.datetime "created_at", null: false
+    t.binary "key", null: false
+    t.bigint "key_hash", null: false
+    t.binary "value", null: false
+    t.index ["byte_size"], name: "index_solid_cache_entries_on_byte_size"
+    t.index ["key_hash", "byte_size"], name: "index_solid_cache_entries_on_key_hash_and_byte_size"
+    t.index ["key_hash"], name: "index_solid_cache_entries_on_key_hash", unique: true
   end
 
   create_table "solid_queue_blocked_executions", force: :cascade do |t|
@@ -258,6 +306,21 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_25_200409) do
     t.index ["key"], name: "index_solid_queue_semaphores_on_key", unique: true
   end
 
+  create_table "subscription_plans", force: :cascade do |t|
+    t.boolean "active", default: true, null: false
+    t.bigint "club_id", null: false
+    t.datetime "created_at", null: false
+    t.string "currency", default: "usd", null: false
+    t.text "description"
+    t.string "name"
+    t.string "plan_type", null: false
+    t.integer "price_cents", null: false
+    t.string "stripe_product_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["club_id"], name: "index_subscription_plans_on_club_id"
+    t.index ["stripe_product_id"], name: "index_subscription_plans_on_stripe_product_id", unique: true
+  end
+
   create_table "users", force: :cascade do |t|
     t.boolean "admin", default: false
     t.string "athlinks_url"
@@ -296,6 +359,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_25_200409) do
   add_foreign_key "event_registrations", "events"
   add_foreign_key "event_registrations", "users"
   add_foreign_key "events", "clubs"
+  add_foreign_key "invoices", "users"
   add_foreign_key "memberships", "clubs"
   add_foreign_key "memberships", "users"
   add_foreign_key "solid_queue_blocked_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
@@ -304,4 +368,5 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_25_200409) do
   add_foreign_key "solid_queue_ready_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_recurring_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_scheduled_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
+  add_foreign_key "subscription_plans", "clubs"
 end
