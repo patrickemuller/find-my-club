@@ -39,6 +39,14 @@ RSpec.configure do |config|
       driver_options.add_argument('--disable-gpu')
       driver_options.add_argument('--no-sandbox')
       driver_options.add_argument('--disable-dev-shm-usage')
+      # 1️⃣ turn the whole password-manager stack off
+      driver_options.add_preference 'credentials_enable_service', false
+      driver_options.add_preference 'profile.password_manager_enabled', false
+      # ⬇️ this one is the culprit – kills the “change your password” warning
+      driver_options.add_preference 'profile.password_manager_leak_detection', false
+      # 2️⃣  chrome‐level switches (belt-and-braces)
+      driver_options.add_argument '--disable-save-password-bubble'
+      driver_options.add_argument '--disable-features=PasswordLeakDetection,PasswordManagerLeakDetection'
     end
   end
 

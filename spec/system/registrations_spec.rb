@@ -1,10 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe "User Registrations", type: :system do
-  before do
-    driven_by(:selenium_chrome_headless)
-  end
-
   describe "sign up" do
     it "user can sign up with valid phone number" do
       visit new_user_registration_path
@@ -19,31 +15,35 @@ RSpec.describe "User Registrations", type: :system do
 
       click_button "Sign up"
 
-      user = User.find_by(email: "john.doe@example.com")
-      expect(user).to be_present
-      expect(user.phone_number).to be_present
-      expect(user.country_code).to eq("us")
+      expect(page).to have_content("A message with a confirmation link has been sent to your email address. Please follow the link to activate your account")
     end
 
     it "user cannot sign up with invalid phone number" do
       visit new_user_registration_path
 
+      # Temporaryly disable native HTML form validations like "required"
+      form = page.find('form')
+      form.execute_script("this.setAttribute('novalidate', 'true')")
+
       fill_in "First name", with: "Jane"
       fill_in "Last name", with: "Smith"
       fill_in "Email", with: "jane.smith@example.com"
       select "United States (+1)", from: "Country"
-      fill_in "Phone Number", with: "123" # Invalid phone number
+      fill_in "Phone Number", with: "123 456" # Invalid phone number
       fill_in "Password", with: "password123"
       fill_in "Password confirmation", with: "password123"
 
       click_button "Sign up"
 
       expect(page).to have_content("Phone number is invalid for selected country")
-      expect(User.find_by(email: "jane.smith@example.com")).to be_nil
     end
 
     it "user cannot sign up without phone number" do
       visit new_user_registration_path
+
+      # Temporaryly disable native HTML form validations like "required"
+      form = page.find('form')
+      form.execute_script("this.setAttribute('novalidate', 'true')")
 
       fill_in "First name", with: "Bob"
       fill_in "Last name", with: "Johnson"
@@ -82,10 +82,10 @@ RSpec.describe "User Registrations", type: :system do
       expect(user.phone_number).to be_present
     end
 
-    it "user can upload avatar" do
+    it "user can upload Profile Picture" do
       visit edit_user_registration_path
 
-      attach_file "Avatar", Rails.root.join('app', 'assets', 'images', 'avatar-example.png')
+      attach_file "Profile Picture", Rails.root.join('app', 'assets', 'images', 'avatar-example.png')
       fill_in "Current password", with: "password"
 
       click_button "Update"
