@@ -25,6 +25,16 @@
           </div>
 
           <div>
+            <%= f.label :country_code, "Country Code", class: "block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300" %>
+            <%= f.select :country_code, country_options_for_select, { include_blank: "Choose country" }, { required: true, class: "block w-full rounded-md p-2 border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100" } %>
+          </div>
+
+          <div>
+            <%= f.label :phone_number, "Phone Number", class: "block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300" %>
+            <%= f.telephone_field :phone_number, autocomplete: "tel", required: true, placeholder: "Enter your phone number", class: " block w-full rounded-md p-2 border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-400" %>
+          </div>
+
+          <div>
             <div class="flex items-baseline justify-between">
               <%= f.label :password, class: "block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300" %>
               <% if @minimum_password_length %>

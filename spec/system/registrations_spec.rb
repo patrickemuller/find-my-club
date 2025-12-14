@@ -85,7 +85,7 @@ RSpec.describe "User Registrations", type: :system do
     it "user can upload avatar" do
       visit edit_user_registration_path
 
-      attach_file "Avatar", Rails.root.join('spec', 'fixtures', 'files', 'avatar.png')
+      attach_file "Avatar", Rails.root.join('app', 'assets', 'images', 'avatar-example.png')
       fill_in "Current password", with: "password"
 
       click_button "Update"
