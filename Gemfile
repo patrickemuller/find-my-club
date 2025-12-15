@@ -80,7 +80,7 @@ gem "devise"
 gem "kaminari"
 
 # Stripe payment processing [https://stripe.com/docs/api]
-gem "stripe", "~> 12.0"
+gem "stripe", "~> 18.0"
 
 # Phone number validation and formatting [https://github.com/daddyz/phonelib]
 gem "phonelib"
