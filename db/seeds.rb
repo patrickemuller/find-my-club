@@ -13,6 +13,8 @@ User.find_or_create_by(email: 'developer@example.com') do |user|
   user.password = 'password'
   user.password_confirmation = 'password'
   user.confirmed_at = Time.current
+  user.country_code = 'us'
+  user.phone_number = '+14155552671'
   user.strava_url = 'https://www.strava.com/athletes/12004453'
   user.trailforks_url = 'https://www.trailforks.com/profile/patrickemuller/'
   user.outside_url = 'https://www.outsideinc.com/developer'
@@ -25,6 +27,8 @@ featured_users_data = [
     email: 'sarah.runner@example.com',
     first_name: 'Sarah',
     last_name: 'Runner',
+    country_code: 'us',
+    phone_number: '+14155551234',
     strava_url: 'https://www.strava.com/athletes/23456789',
     outside_url: 'https://www.outsideinc.com/sarah-runner',
     athlinks_url: 'https://www.athlinks.com/athletes/23456'
@@ -33,6 +37,8 @@ featured_users_data = [
     email: 'mike.cyclist@example.com',
     first_name: 'Mike',
     last_name: 'Cyclist',
+    country_code: 'ca',
+    phone_number: '+14165555678',
     strava_url: 'https://www.strava.com/athletes/34567890',
     trailforks_url: 'https://www.trailforks.com/profile/mikecyclist/'
   },
@@ -40,6 +46,8 @@ featured_users_data = [
     email: 'emma.hiker@example.com',
     first_name: 'Emma',
     last_name: 'Hiker',
+    country_code: 'br',
+    phone_number: '+5511987654321',
     trailforks_url: 'https://www.trailforks.com/profile/emmahiker/',
     outside_url: 'https://www.outsideinc.com/emma-hiker'
   },
@@ -47,6 +55,8 @@ featured_users_data = [
     email: 'alex.swimmer@example.com',
     first_name: 'Alex',
     last_name: 'Swimmer',
+    country_code: 'us',
+    phone_number: '+13105559999',
     athlinks_url: 'https://www.athlinks.com/athletes/34567',
     outside_url: 'https://www.outsideinc.com/alex-swimmer'
   }
@@ -59,6 +69,8 @@ featured_users_data.each do |user_data|
     user.password = 'password'
     user.password_confirmation = 'password'
     user.confirmed_at = Time.current
+    user.country_code = user_data[:country_code]
+    user.phone_number = user_data[:phone_number]
     user.strava_url = user_data[:strava_url] if user_data[:strava_url]
     user.trailforks_url = user_data[:trailforks_url] if user_data[:trailforks_url]
     user.outside_url = user_data[:outside_url] if user_data[:outside_url]
@@ -73,6 +85,25 @@ additional_users_needed = 500 - existing_users.count
 if additional_users_needed > 0
   puts "Creating #{additional_users_needed} additional users..."
   new_users = FactoryBot.create_list(:user, additional_users_needed)
+
+  # Attach avatars to 50% of new users
+  new_users.each_with_index do |user, index|
+    if index % 2 == 0
+      # Attach avatar for half the users
+      begin
+        avatar_path = Rails.root.join('app', 'assets', 'images', 'avatar-example.png')
+        user.avatar.attach(
+          io: File.open(avatar_path),
+          filename: "avatar_#{user.id}.png",
+          content_type: 'image/png'
+        )
+      rescue => e
+        # Skip avatar if attachment fails
+        puts "  Skipped avatar for user #{user.id}: #{e.message}"
+      end
+    end
+  end
+
   users = existing_users + new_users
 else
   puts "Using existing #{existing_users.count} users..."

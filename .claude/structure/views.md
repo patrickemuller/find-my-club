@@ -170,12 +170,16 @@ This document provides a breakdown of all view templates in the Find My Club app
 
 **`new.html.erb`**
 - Sign up form
-- First name, last name, email, password
+- First name, last name, email, country code, phone number, password
+- Country selector with flag icons
+- Phone number field with validation
 
 **`edit.html.erb`**
 - Edit profile form
-- Update email, password, social media URLs
-- Links to Strava, TrailForks, Outside.com, Athlinks
+- Avatar upload with preview (shows current avatar if attached)
+- Update email, password, phone number, country code
+- Social media URLs: Strava, TrailForks, Outside.com, Athlinks
+- File size and format hints for avatar (256x256px recommended, 10MB max)
 
 ### Sessions (Devise)
 

@@ -85,6 +85,9 @@ jobs:
           ruby-version: .ruby-version
           bundler-cache: true
 
+      - name: Install libvips system dependencies
+        run: sudo apt-get install -y --no-install-recommends libvips libvips-dev
+
       - name: Run tests
         env:
           RAILS_ENV: test

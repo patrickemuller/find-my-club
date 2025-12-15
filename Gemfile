@@ -82,6 +82,9 @@ gem "kaminari"
 # Stripe payment processing [https://stripe.com/docs/api]
 gem "stripe", "~> 12.0"
 
+# Phone number validation and formatting [https://github.com/daddyz/phonelib]
+gem "phonelib"
+
 group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "web-console"

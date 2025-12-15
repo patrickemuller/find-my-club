@@ -14,6 +14,8 @@ This document provides a breakdown of all models in the Find My Club application
 - `email` - User email (unique, required)
 - `encrypted_password` - Devise authentication
 - `first_name`, `last_name` - User name (required)
+- `phone_number` - Phone number in E.164 format (required)
+- `country_code` - ISO country code for phone validation (required)
 - `admin` - Admin flag (boolean, default: false)
 - `strava_url` - Strava profile URL (validated format)
 - `trailforks_url` - TrailForks profile URL (validated format)
@@ -26,17 +28,21 @@ This document provides a breakdown of all models in the Find My Club application
 - `has_many :memberships`
 - `has_many :clubs_as_member` (through memberships)
 - `has_many :event_registrations`
+- `has_one_attached :avatar` - Profile picture (ActiveStorage)
 
 **Key Methods:**
 - `member_of?(club)` - Check if user is active member of club
 - `can_join?(club)` - Check if user can join a club
+- `formatted_phone_number` - Returns phone number in international format
 - `strava_username` - Extract username from Strava URL
 - `trailforks_username` - Extract username from TrailForks URL
 - `outside_username` - Extract username from Outside.com URL
 - `athlinks_username` - Extract username from Athlinks URL
 
 **Validations:**
-- Required: email, password, first_name, last_name
+- Required: email, password, first_name, last_name, phone_number, country_code
+- Phone number validated with Phonelib based on country code
+- Avatar must be image (jpeg, png, gif, webp) and under 10MB
 - URL format validation for all social media URLs
 - Custom validation to prevent XSS in URLs
 

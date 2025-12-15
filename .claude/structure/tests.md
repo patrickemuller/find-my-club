@@ -172,6 +172,7 @@ end
 - `memberships_spec.rb` - Membership flows
 - `header_navigation_spec.rb` - Navigation testing
 - `profile_carousel_spec.rb` - Profile carousel feature
+- `registrations_spec.rb` - User registration and account edit flows
 
 **Coverage:**
 - End-to-end user flows

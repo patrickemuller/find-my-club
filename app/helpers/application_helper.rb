@@ -12,4 +12,18 @@ module ApplicationHelper
 
     svg.html_safe
   end
+
+  def country_options_for_select
+    # Return a curated list of common countries with emoji flags
+    countries = [
+      { code: "us", name: "United States", dial_code: "+1" },
+      { code: "ca", name: "Canada", dial_code: "+1" }
+    ]
+
+    countries.map do |country|
+      flag_emoji = country[:code].upcase.chars.map { |c| (c.ord + 0x1F1A5).chr(Encoding::UTF_8) }.join
+      label = "#{flag_emoji} #{country[:name]} (#{country[:dial_code]})"
+      [ label, country[:code] ]
+    end
+  end
 end
